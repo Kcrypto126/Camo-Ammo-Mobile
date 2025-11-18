@@ -1,13 +1,13 @@
 // import BiometricSignIn from "@/components/ui/biometric-signin.tsx";
 // import { SignInButton } from "@/components/ui/signin.tsx";
-// import { useAuth } from "@/hooks/use-auth.ts";
-// import { useBiometricAuth } from "@/hooks/use-biometric-auth.ts";
+// import { useAuth } from "@/hooks/use-auth";
+import { useBiometricAuth } from "@/hooks/use-biometric-auth";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
-import { ImageBackground, Text, View } from "react-native";
+import { Button, ImageBackground, Text, View } from "react-native";
 
 export default function WelcomePage() {
-  // const { isEnabled } = useBiometricAuth();
+  const { isEnabled } = useBiometricAuth();
   // const { signIn } = useAuth();
 
   const handleBiometricSuccess = () => {
@@ -82,13 +82,14 @@ export default function WelcomePage() {
         >
           Track Your Hunt. Master Your Territory.
         </Text>
-        {/* <View className="w-full space-y-4">
-          {isEnabled && <BiometricSignIn onSuccess={handleBiometricSuccess} />}
-          <SignInButton
+        <View className="w-full space-y-4">
+          {/* {isEnabled && <BiometricSignIn onSuccess={handleBiometricSuccess} />} */}
+          {/* <SignInButton
             size="lg"
             className="h-14 w-full px-8 text-lg shadow-2xl"
-          />
-        </View> */}
+          /> */}
+          <Button title="Sign in with Google" />
+        </View>
       </View>
     </ImageBackground>
   );
