@@ -1,13 +1,13 @@
 // import BiometricSignIn from "@/components/ui/biometric-signin.tsx";
 // import { SignInButton } from "@/components/ui/signin.tsx";
 // import { useAuth } from "@/hooks/use-auth";
-import { useBiometricAuth } from "@/hooks/use-biometric-auth";
+// import { useBiometricAuth } from "@/hooks/use-biometric-auth";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import { Button, ImageBackground, Text, View } from "react-native";
 
 export default function WelcomePage() {
-  const { isEnabled } = useBiometricAuth();
+  // const { isEnabled } = useBiometricAuth();
   // const { signIn } = useAuth();
 
   const handleBiometricSuccess = () => {

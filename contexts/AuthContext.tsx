@@ -1,37 +1,33 @@
-import React, { createContext, ReactNode, useContext, useState } from "react";
+import { ConvexAuthProvider } from "@convex-dev/auth/react";
+import { ConvexReactClient } from "convex/react";
+import * as SecureStore from "expo-secure-store";
+import type { ReactNode } from "react";
 
-interface AuthContextType {
-  isAuthenticated: boolean;
-  signIn: () => void;
-  signOut: () => void;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!, {
+  unsavedChangesWarning: false,
+});
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  const signIn = () => {
-    console.log("[AuthContext] Signing in...");
-    setIsAuthenticated(true);
-  };
-
-  const signOut = () => {
-    console.log("[AuthContext] Signing out...");
-    setIsAuthenticated(false);
+  const secureStorage = {
+    getItem: async (key: string) => {
+      return SecureStore.getItemAsync(key);
+    },
+    setItem: async (key: string, value: any) => {
+      await SecureStore.setItemAsync(key, value);
+    },
+    removeItem: async (key: string) => {
+      await SecureStore.deleteItemAsync(key);
+    },
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, signIn, signOut }}>
+    <ConvexAuthProvider
+      client={convex}
+      storage={
+        window.localStorage === undefined ? secureStorage : window.localStorage
+      }
+    >
       {children}
-    </AuthContext.Provider>
+    </ConvexAuthProvider>
   );
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
 }
