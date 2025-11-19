@@ -1,7 +1,7 @@
 import { useAuth } from "@/hooks/use-auth";
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -22,11 +22,14 @@ export function SignInModal({ visible, onClose }: SignInModalProps) {
   const { signIn } = useAuth();
   const router = useRouter();
   const [showEmailForm, setShowEmailForm] = useState(false);
+  const [showOTPForm, setShowOTPForm] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [otpCode, setOtpCode] = useState(["", "", "", ""]);
   const [isLoading, setIsLoading] = useState(false);
+  const otpInputRefs = useRef<(TextInput | null)[]>([]);
 
   const handleGoogleSignIn = async () => {
     try {
@@ -44,19 +47,45 @@ export function SignInModal({ visible, onClose }: SignInModalProps) {
     }
   };
 
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePassword = (password: string): boolean => {
+    return password.length >= 6;
+  };
+
   const handleEmailSignIn = async () => {
-    if (!email || !password) {
-      Alert.alert("Error", "Please enter email and password");
+    // Validate email
+    if (!email) {
+      Alert.alert("Error", "Please enter your email");
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      Alert.alert("Error", "Please enter a valid email address");
+      return;
+    }
+
+    // Validate password
+    if (!password) {
+      Alert.alert("Error", "Please enter your password");
+      return;
+    }
+
+    if (!validatePassword(password)) {
+      Alert.alert("Error", "Password must be at least 6 characters");
       return;
     }
 
     try {
       console.log("[SignInModal] Starting email sign-in...");
       setIsLoading(true);
-      await signIn("password", { email, password });
-      console.log("[SignInModal] Email sign-in successful");
-      onClose();
-      router.replace("/(tabs)/dashboard");
+      // Use password-code provider which triggers OTP verification
+      //   await signIn("password-code", { email, password });
+      //   console.log("[SignInModal] OTP sent to email");
+      setShowOTPForm(true);
     } catch (error) {
       console.error("[SignInModal] Email sign-in error:", error);
       Alert.alert("Error", "Invalid email or password");
@@ -66,18 +95,41 @@ export function SignInModal({ visible, onClose }: SignInModalProps) {
   };
 
   const handleSignUp = async () => {
-    if (!name || !email || !password) {
-      Alert.alert("Error", "Please fill in all fields");
+    // Validate name
+    if (!name || name.trim() === "") {
+      Alert.alert("Error", "Please enter your name");
+      return;
+    }
+
+    // Validate email
+    if (!email) {
+      Alert.alert("Error", "Please enter your email");
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      Alert.alert("Error", "Please enter a valid email address");
+      return;
+    }
+
+    // Validate password
+    if (!password) {
+      Alert.alert("Error", "Please enter your password");
+      return;
+    }
+
+    if (!validatePassword(password)) {
+      Alert.alert("Error", "Password must be at least 6 characters");
       return;
     }
 
     try {
       console.log("[SignInModal] Starting sign-up...");
       setIsLoading(true);
-      await signIn("password", { email, password, name });
-      console.log("[SignInModal] Sign-up successful");
-      onClose();
-      router.replace("/(tabs)/dashboard");
+      // Use password-code provider which triggers OTP verification
+      await signIn("password-code", { email, password, name });
+      console.log("[SignInModal] OTP sent to email");
+      setShowOTPForm(true);
     } catch (error) {
       console.error("[SignInModal] Sign-up error:", error);
       Alert.alert("Error", "Failed to create account. Please try again.");
@@ -86,12 +138,81 @@ export function SignInModal({ visible, onClose }: SignInModalProps) {
     }
   };
 
+  const handleOTPVerification = async () => {
+    const code = otpCode.join("");
+    if (code.length !== 4) {
+      Alert.alert("Error", "Please enter the complete 4-digit code");
+      return;
+    }
+
+    try {
+      console.log("[SignInModal] Verifying OTP code...");
+      setIsLoading(true);
+      // Verify OTP with the code
+      await signIn("password-code", { email, password, code });
+      console.log("[SignInModal] OTP verification successful");
+      onClose();
+      router.replace("/(tabs)/dashboard");
+    } catch (error) {
+      console.error("[SignInModal] OTP verification error:", error);
+      Alert.alert("Error", "Invalid code. Please try again.");
+      setOtpCode(["", "", "", ""]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleOTPChange = (index: number, value: string) => {
+    // Handle paste: if value length > 1, it's a paste operation
+    if (value.length > 1) {
+      // Extract only digits from pasted value
+      const digits = value.replace(/\D/g, "").slice(0, 4);
+      const newOtpCode = [...otpCode];
+
+      // Fill all inputs with pasted digits
+      for (let i = 0; i < 4; i++) {
+        newOtpCode[i] = digits[i] || "";
+      }
+
+      setOtpCode(newOtpCode);
+
+      // Focus the last filled input or the last input
+      const lastFilledIndex = Math.min(digits.length - 1, 3);
+      setTimeout(() => {
+        otpInputRefs.current[lastFilledIndex]?.focus();
+      }, 0);
+      return;
+    }
+
+    // Single digit input
+    // Only allow digits
+    if (value && !/^\d$/.test(value)) return;
+
+    const newOtpCode = [...otpCode];
+    newOtpCode[index] = value;
+    setOtpCode(newOtpCode);
+
+    // Auto-focus next input
+    if (value && index < 3) {
+      otpInputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleOTPKeyPress = (index: number, key: string) => {
+    // Handle backspace to move to previous input
+    if (key === "Backspace" && !otpCode[index] && index > 0) {
+      otpInputRefs.current[index - 1]?.focus();
+    }
+  };
+
   const handleClose = () => {
     setShowEmailForm(false);
+    setShowOTPForm(false);
     setIsSignUp(false);
     setName("");
     setEmail("");
     setPassword("");
+    setOtpCode(["", "", "", ""]);
     onClose();
   };
 
@@ -115,7 +236,11 @@ export function SignInModal({ visible, onClose }: SignInModalProps) {
             {/* Header */}
             <View className="flex-row justify-between items-center mb-4">
               <Text className="text-2xl font-bold text-white">
-                {isSignUp ? "Create Account" : "Sign In"}
+                {showOTPForm
+                  ? "Check your email"
+                  : isSignUp
+                    ? "Create Account"
+                    : "Sign In"}
               </Text>
               <TouchableOpacity onPress={handleClose}>
                 <AntDesign name="close" size={16} color="#fff" />
@@ -123,7 +248,11 @@ export function SignInModal({ visible, onClose }: SignInModalProps) {
             </View>
 
             {/* Subtitle */}
-            {!showEmailForm ? (
+            {showOTPForm ? (
+              <Text className="text-white mb-6">
+                Enter the 4-digit code we sent to your email address
+              </Text>
+            ) : !showEmailForm ? (
               <Text className="text-gray-400 mb-6">
                 Choose how you'd like to sign in
               </Text>
@@ -135,7 +264,67 @@ export function SignInModal({ visible, onClose }: SignInModalProps) {
               </Text>
             )}
 
-            {!showEmailForm ? (
+            {showOTPForm ? (
+              <>
+                {/* OTP Input */}
+                <View className="mb-6">
+                  <Text className="text-white text-sm font-medium mb-3">
+                    Code
+                  </Text>
+                  <View className="flex-row justify-between gap-2">
+                    {otpCode.map((digit, index) => (
+                      <TextInput
+                        key={index}
+                        ref={(ref) => {
+                          otpInputRefs.current[index] = ref;
+                        }}
+                        className="border border-gray-700 bg-gray-800 text-white rounded-lg text-center text-lg font-semibold"
+                        style={{
+                          width: 50,
+                          height: 60,
+                        }}
+                        value={digit}
+                        onChangeText={(value) => handleOTPChange(index, value)}
+                        onKeyPress={({ nativeEvent }) =>
+                          handleOTPKeyPress(index, nativeEvent.key)
+                        }
+                        keyboardType="number-pad"
+                        maxLength={index === 0 ? 4 : 1}
+                        editable={!isLoading}
+                        selectTextOnFocus
+                      />
+                    ))}
+                  </View>
+                </View>
+
+                {/* Continue Button */}
+                <TouchableOpacity
+                  onPress={handleOTPVerification}
+                  disabled={isLoading}
+                  className="bg-orange-500 rounded-lg py-4 items-center mb-4"
+                >
+                  {isLoading ? (
+                    <ActivityIndicator color="#000" />
+                  ) : (
+                    <Text className="text-black font-semibold text-base">
+                      Continue
+                    </Text>
+                  )}
+                </TouchableOpacity>
+
+                {/* Back Button */}
+                <TouchableOpacity
+                  onPress={() => {
+                    setShowOTPForm(false);
+                    setOtpCode(["", "", "", ""]);
+                  }}
+                  disabled={isLoading}
+                  className="items-center"
+                >
+                  <Text className="text-white text-sm">Back</Text>
+                </TouchableOpacity>
+              </>
+            ) : !showEmailForm ? (
               <>
                 {/* Google Button */}
                 <TouchableOpacity
