@@ -22,6 +22,8 @@ export function SignInModal({ visible, onClose }: SignInModalProps) {
   const { signIn } = useAuth();
   const router = useRouter();
   const [showEmailForm, setShowEmailForm] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -63,8 +65,31 @@ export function SignInModal({ visible, onClose }: SignInModalProps) {
     }
   };
 
+  const handleSignUp = async () => {
+    if (!name || !email || !password) {
+      Alert.alert("Error", "Please fill in all fields");
+      return;
+    }
+
+    try {
+      console.log("[SignInModal] Starting sign-up...");
+      setIsLoading(true);
+      await signIn("password", { email, password, name });
+      console.log("[SignInModal] Sign-up successful");
+      onClose();
+      router.replace("/(tabs)/dashboard");
+    } catch (error) {
+      console.error("[SignInModal] Sign-up error:", error);
+      Alert.alert("Error", "Failed to create account. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleClose = () => {
     setShowEmailForm(false);
+    setIsSignUp(false);
+    setName("");
     setEmail("");
     setPassword("");
     onClose();
@@ -83,22 +108,32 @@ export function SignInModal({ visible, onClose }: SignInModalProps) {
         onPress={handleClose}
       >
         <View
-          className="w-full max-w-sm"
+          className="w-full max-w-lg"
           onStartShouldSetResponder={() => true}
         >
           <View className="bg-gray-900 rounded-2xl w-full p-6 relative">
             {/* Header */}
             <View className="flex-row justify-between items-center mb-4">
-              <Text className="text-2xl font-bold text-white">Sign In</Text>
+              <Text className="text-2xl font-bold text-white">
+                {isSignUp ? "Create Account" : "Sign In"}
+              </Text>
               <TouchableOpacity onPress={handleClose}>
                 <AntDesign name="close" size={16} color="#fff" />
               </TouchableOpacity>
             </View>
 
             {/* Subtitle */}
-            <Text className="text-gray-400 mb-6">
-              Choose how you'd like to sign in
-            </Text>
+            {!showEmailForm ? (
+              <Text className="text-gray-400 mb-6">
+                Choose how you'd like to sign in
+              </Text>
+            ) : (
+              <Text className="text-gray-400 mb-6">
+                {isSignUp
+                  ? "Create a new account with email"
+                  : "Sign in with your email"}
+              </Text>
+            )}
 
             {!showEmailForm ? (
               <>
@@ -134,12 +169,36 @@ export function SignInModal({ visible, onClose }: SignInModalProps) {
               <>
                 {/* Back button */}
                 <TouchableOpacity
-                  onPress={() => setShowEmailForm(false)}
+                  onPress={() => {
+                    setShowEmailForm(false);
+                    setIsSignUp(false);
+                    setName("");
+                    setEmail("");
+                    setPassword("");
+                  }}
                   className="mb-4 flex-row items-center gap-2 max-w-[50px]"
                 >
                   <AntDesign name="arrow-left" size={10} color="#f97316" />
                   <Text className="text-orange-500 text-base">Back</Text>
                 </TouchableOpacity>
+
+                {/* Name Field (only for signup) */}
+                {isSignUp && (
+                  <View className="mb-4">
+                    <Text className="text-white text-sm font-medium mb-2">
+                      Name
+                    </Text>
+                    <TextInput
+                      className="border border-gray-700 bg-gray-800 text-white rounded-lg px-4 py-3"
+                      placeholder="John Doe"
+                      placeholderTextColor="#9ca3af"
+                      value={name}
+                      onChangeText={setName}
+                      autoCapitalize="words"
+                      editable={!isLoading}
+                    />
+                  </View>
+                )}
 
                 {/* Email Form */}
                 <View className="mb-4">
@@ -148,7 +207,7 @@ export function SignInModal({ visible, onClose }: SignInModalProps) {
                   </Text>
                   <TextInput
                     className="border border-gray-700 bg-gray-800 text-white rounded-lg px-4 py-3"
-                    placeholder="Enter your email"
+                    placeholder="you@example.com"
                     placeholderTextColor="#9ca3af"
                     value={email}
                     onChangeText={setEmail}
@@ -173,19 +232,56 @@ export function SignInModal({ visible, onClose }: SignInModalProps) {
                   />
                 </View>
 
+                {/* Sign In / Sign Up Button */}
                 <TouchableOpacity
-                  onPress={handleEmailSignIn}
+                  onPress={isSignUp ? handleSignUp : handleEmailSignIn}
                   disabled={isLoading}
-                  className="bg-orange-500 rounded-lg py-4 items-center"
+                  className="bg-orange-500 rounded-lg py-4 items-center mb-4"
                 >
                   {isLoading ? (
                     <ActivityIndicator color="#000" />
                   ) : (
                     <Text className="text-black font-semibold text-base">
-                      Sign In
+                      {isSignUp ? "Create Account" : "Sign In"}
                     </Text>
                   )}
                 </TouchableOpacity>
+
+                {/* Switch between Sign In and Sign Up */}
+                <View className="items-center">
+                  {isSignUp ? (
+                    <View className="flex-row items-center">
+                      <Text className="text-white text-sm">
+                        Already have an account?{" "}
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setIsSignUp(false);
+                          setName("");
+                        }}
+                        disabled={isLoading}
+                      >
+                        <Text className="text-orange-500 text-sm font-medium">
+                          Sign in
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  ) : (
+                    <View className="flex-row items-center">
+                      <Text className="text-white text-sm">
+                        Need an account?{" "}
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() => setIsSignUp(true)}
+                        disabled={isLoading}
+                      >
+                        <Text className="text-orange-500 text-sm font-medium">
+                          Signup
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                </View>
               </>
             )}
           </View>
