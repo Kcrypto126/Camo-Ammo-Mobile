@@ -1,6 +1,6 @@
-import { View, Text, TouchableOpacity } from "react-native";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "expo-router";
+import { Text, TouchableOpacity, View } from "react-native";
 
 export default function Dashboard() {
   const { signOut } = useAuth();
@@ -18,9 +18,7 @@ export default function Dashboard() {
         <Text className="text-2xl font-bold text-gray-900 mb-2">
           Welcome to Dashboard
         </Text>
-        <Text className="text-gray-600">
-          You are successfully signed in!
-        </Text>
+        <Text className="text-gray-600">You are successfully signed in!</Text>
       </View>
 
       <TouchableOpacity
@@ -32,4 +30,3 @@ export default function Dashboard() {
     </View>
   );
 }
-

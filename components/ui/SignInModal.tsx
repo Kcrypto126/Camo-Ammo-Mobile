@@ -53,7 +53,7 @@ export function SignInModal({ visible, onClose }: SignInModalProps) {
   };
 
   const validatePassword = (password: string): boolean => {
-    return password.length >= 6;
+    return password.length >= 8;
   };
 
   const handleEmailSignIn = async () => {
@@ -75,7 +75,7 @@ export function SignInModal({ visible, onClose }: SignInModalProps) {
     }
 
     if (!validatePassword(password)) {
-      Alert.alert("Error", "Password must be at least 6 characters");
+      Alert.alert("Error", "Password must be at least 8 characters");
       return;
     }
 
@@ -83,8 +83,8 @@ export function SignInModal({ visible, onClose }: SignInModalProps) {
       console.log("[SignInModal] Starting email sign-in...");
       setIsLoading(true);
       // Use password-code provider which triggers OTP verification
-      //   await signIn("password-code", { email, password });
-      //   console.log("[SignInModal] OTP sent to email");
+      await signIn("password-code", { email, password, flow: "signIn" });
+      console.log("[SignInModal] OTP sent to email");
       setShowOTPForm(true);
     } catch (error) {
       console.error("[SignInModal] Email sign-in error:", error);
@@ -119,7 +119,7 @@ export function SignInModal({ visible, onClose }: SignInModalProps) {
     }
 
     if (!validatePassword(password)) {
-      Alert.alert("Error", "Password must be at least 6 characters");
+      Alert.alert("Error", "Password must be at least 8 characters");
       return;
     }
 
@@ -127,7 +127,7 @@ export function SignInModal({ visible, onClose }: SignInModalProps) {
       console.log("[SignInModal] Starting sign-up...");
       setIsLoading(true);
       // Use password-code provider which triggers OTP verification
-      await signIn("password-code", { email, password, name });
+      await signIn("password-code", { email, password, name, flow: "signUp" });
       console.log("[SignInModal] OTP sent to email");
       setShowOTPForm(true);
     } catch (error) {
@@ -149,7 +149,12 @@ export function SignInModal({ visible, onClose }: SignInModalProps) {
       console.log("[SignInModal] Verifying OTP code...");
       setIsLoading(true);
       // Verify OTP with the code
-      await signIn("password-code", { email, password, code });
+      await signIn("password-code", {
+        email,
+        password,
+        code,
+        flow: "email-verification",
+      });
       console.log("[SignInModal] OTP verification successful");
       onClose();
       router.replace("/(tabs)/dashboard");
