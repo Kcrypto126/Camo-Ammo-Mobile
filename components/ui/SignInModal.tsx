@@ -135,9 +135,10 @@ export function SignInModal({ visible, onClose }: SignInModalProps) {
                 {/* Back button */}
                 <TouchableOpacity
                   onPress={() => setShowEmailForm(false)}
-                  className="mb-4"
+                  className="mb-4 flex-row items-center gap-2 max-w-[50px]"
                 >
-                  <Text className="text-orange-500 text-base">← Back</Text>
+                  <AntDesign name="arrow-left" size={10} color="#f97316" />
+                  <Text className="text-orange-500 text-base">Back</Text>
                 </TouchableOpacity>
 
                 {/* Email Form */}
