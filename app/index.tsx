@@ -1,19 +1,11 @@
-// import BiometricSignIn from "@/components/ui/biometric-signin.tsx";
-// import { SignInButton } from "@/components/ui/signin.tsx";
-// import { useAuth } from "@/hooks/use-auth";
-// import { useBiometricAuth } from "@/hooks/use-biometric-auth";
+import { SignInModal } from "@/components/ui/SignInModal";
+import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import React from "react";
-import { Button, ImageBackground, Text, View } from "react-native";
+import React, { useState } from "react";
+import { ImageBackground, Text, TouchableOpacity, View } from "react-native";
 
 export default function WelcomePage() {
-  // const { isEnabled } = useBiometricAuth();
-  // const { signIn } = useAuth();
-
-  const handleBiometricSuccess = () => {
-    // Biometric authentication successful, trigger OIDC sign-in silently
-    // signIn("google");
-  };
+  const [showModal, setShowModal] = useState(false);
 
   return (
     <ImageBackground
@@ -82,15 +74,36 @@ export default function WelcomePage() {
         >
           Track Your Hunt. Master Your Territory.
         </Text>
-        <View className="w-full space-y-4">
-          {/* {isEnabled && <BiometricSignIn onSuccess={handleBiometricSuccess} />} */}
-          {/* <SignInButton
-            size="lg"
-            className="h-14 w-full px-8 text-lg shadow-2xl"
-          /> */}
-          <Button title="Sign in with Google" />
+        <View className="w-full items-center">
+          <TouchableOpacity
+            onPress={() => {
+              console.log("[WelcomePage] Sign in button pressed");
+              setShowModal(true);
+            }}
+            className="bg-orange-500 max-w-[490px] w-full rounded-lg py-4 px-6 flex-row items-center justify-center"
+            style={{
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.3,
+              shadowRadius: 8,
+              elevation: 8,
+            }}
+          >
+            {/* Arrow Icon */}
+            <Ionicons
+              name="arrow-forward"
+              size={20}
+              color="#000"
+              style={{ marginRight: 8 }}
+            />
+            {/* Sign In Text */}
+            <Text className="text-black text-lg font-semibold">Sign In</Text>
+          </TouchableOpacity>
         </View>
       </View>
+
+      {/* Sign In Modal */}
+      <SignInModal visible={showModal} onClose={() => setShowModal(false)} />
     </ImageBackground>
   );
 }
