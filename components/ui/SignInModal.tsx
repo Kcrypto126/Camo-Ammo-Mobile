@@ -335,7 +335,7 @@ export function SignInModal({ visible, onClose }: SignInModalProps) {
                 <TouchableOpacity
                   onPress={handleGoogleSignIn}
                   disabled={isLoading}
-                  className="flex-row items-center justify-center border border-orange-500 rounded-lg py-2 mb-4 bg-gray-800"
+                  className="flex-row items-center justify-center border border-gray-700 rounded-lg py-2 mb-4 bg-gray-800"
                 >
                   {isLoading ? (
                     <ActivityIndicator color="#fff" />
