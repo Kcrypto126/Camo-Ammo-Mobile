@@ -1,5 +1,5 @@
 import { useAuth } from "@/hooks/use-auth";
-import { Tabs, useRouter, useSegments } from "expo-router";
+import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
 
 export default function TabsLayout() {
@@ -18,21 +18,18 @@ export default function TabsLayout() {
   }, [isAuthenticated]);
 
   return (
-    <Tabs
+    <Stack
       screenOptions={{
-        headerShown: true,
-        tabBarActiveTintColor: "#2563eb",
-        tabBarInactiveTintColor: "#6b7280",
+        headerShown: false,
       }}
     >
-      <Tabs.Screen
-        name="dashboard"
-        options={{
-          title: "Dashboard",
-          headerTitle: "Dashboard",
-          tabBarLabel: "Dashboard",
-        }}
-      />
-    </Tabs>
+      <Stack.Screen name="dashboard" />
+      <Stack.Screen name="hq" />
+      <Stack.Screen name="map" />
+      <Stack.Screen name="scouting" />
+      <Stack.Screen name="friends" />
+      <Stack.Screen name="mytools" />
+      <Stack.Screen name="ProfileSetupPage" />
+    </Stack>
   );
 }
