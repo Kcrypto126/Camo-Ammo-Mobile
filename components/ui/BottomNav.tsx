@@ -1,5 +1,5 @@
-import { AntDesign, Ionicons, MaterialIcons } from "@expo/vector-icons";
-import { TouchableOpacity, View, Text } from "react-native";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { Text, TouchableOpacity, View } from "react-native";
 
 interface BottomNavProps {
   activeTab: string;
@@ -66,7 +66,7 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
   ];
 
   return (
-    <View className="bg-gray-900 border-t border-gray-800 flex-row justify-around py-2">
+    <View className="bg-gray-900 border-t border-gray-800 flex-row justify-around">
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id;
         return (
@@ -89,4 +89,3 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
     </View>
   );
 }
-

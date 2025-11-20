@@ -67,7 +67,7 @@ export default function Dashboard() {
 
   // Show main dashboard with header and bottom nav
   return (
-    <View className="flex-1 bg-gray-900">
+    <View className="flex-1 bg-gray-900 pt-6">
       {/* Header - Only show on HQ tab */}
       {activeTab === "hq" && (
         <Header
