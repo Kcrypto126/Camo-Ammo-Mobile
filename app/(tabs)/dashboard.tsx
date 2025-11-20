@@ -1,32 +1,86 @@
-import { useAuth } from "@/hooks/use-auth";
+import { BottomNav } from "@/components/ui/BottomNav";
+import { Header } from "@/components/ui/Header";
+import { api } from "@/convex/_generated/api";
+import { useQuery } from "convex/react";
 import { useRouter } from "expo-router";
-import { Text, TouchableOpacity, View } from "react-native";
+import { useState } from "react";
+import { ActivityIndicator, Text, View } from "react-native";
+import ProfileSetupPage from "./ProfileSetupPage";
+import FriendsPage from "./friends";
+import HQPage from "./hq";
+import MapPage from "./map";
+import MyToolsPage from "./mytools";
+import ScoutingPage from "./scouting";
 
 export default function Dashboard() {
-  const { signOut } = useAuth();
   const router = useRouter();
+  const profile = useQuery(api.profile.getMyProfile);
+  const [activeTab, setActiveTab] = useState("hq");
 
-  const handleSignOut = () => {
-    console.log("[Dashboard] Signing out...");
-    signOut();
-    router.replace("/");
+  const handleStartHunt = () => {
+    console.log("[Dashboard] Start Hunt pressed");
+    // Navigate to map or start tracking
+    setActiveTab("map");
   };
 
-  return (
-    <View className="flex-1 bg-gray-50 p-6">
-      <View className="bg-white rounded-lg p-6 mb-4 shadow-sm">
-        <Text className="text-2xl font-bold text-gray-900 mb-2">
-          Welcome to Dashboard
-        </Text>
-        <Text className="text-gray-600">You are successfully signed in!</Text>
-      </View>
+  const handleNotificationPress = () => {
+    console.log("[Dashboard] Notification pressed");
+    // Handle notification
+  };
 
-      <TouchableOpacity
-        className="bg-red-600 rounded-lg py-4 items-center mt-4"
-        onPress={handleSignOut}
-      >
-        <Text className="text-white font-semibold text-base">Sign Out</Text>
-      </TouchableOpacity>
+  const handleTabChange = (tab: string) => {
+    console.log("[Dashboard] Tab changed to:", tab);
+    setActiveTab(tab);
+  };
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case "hq":
+        return <HQPage />;
+      case "map":
+        return <MapPage />;
+      case "scouting":
+        return <ScoutingPage />;
+      case "friends":
+        return <FriendsPage />;
+      case "mytools":
+        return <MyToolsPage />;
+      default:
+        return <HQPage />;
+    }
+  };
+
+  // Show loading state while checking profile
+  if (profile === undefined) {
+    return (
+      <View className="flex-1 bg-gray-900 items-center justify-center">
+        <ActivityIndicator size="large" color="#f97316" />
+        <Text className="text-gray-400 mt-4">Loading...</Text>
+      </View>
+    );
+  }
+
+  // Show profile setup if not completed (no header/navbar)
+  if (!profile?.profileCompleted) {
+    return <ProfileSetupPage />;
+  }
+
+  // Show main dashboard with header and bottom nav
+  return (
+    <View className="flex-1 bg-gray-900">
+      {/* Header - Only show on HQ tab */}
+      {activeTab === "hq" && (
+        <Header
+          onStartHunt={handleStartHunt}
+          onNotificationPress={handleNotificationPress}
+        />
+      )}
+
+      {/* Main Content */}
+      <View className="flex-1">{renderContent()}</View>
+
+      {/* Bottom Navigation */}
+      <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
     </View>
   );
 }
