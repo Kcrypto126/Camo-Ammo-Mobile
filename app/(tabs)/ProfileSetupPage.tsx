@@ -182,7 +182,7 @@ export default function ProfileSetupPage() {
       return;
     }
     const pickerResult = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"] as any,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       quality: 0.8,
       base64: false,
@@ -199,29 +199,63 @@ export default function ProfileSetupPage() {
         return;
       }
       setUploadedPhoto(asset.uri);
-      // upload to API storage
-      const fileName = asset.fileName || "profile.jpg";
-      const fileType =
-        asset.type &&
-        asset.type !==
-          ("unknown" as "video" | "image" | "livePhoto" | "pairedVideo")
-          ? asset.type
-          : "image/jpeg";
-      const uri = asset.uri;
-      const postUrl = await generateUploadUrl();
-      const photoResp = await fetch(uri);
+
+      // Get upload URL from Convex
+      const uploadUrl = await generateUploadUrl();
+
+      if (!uploadUrl) {
+        throw new Error("Failed to get upload URL");
+      }
+
+      // Prepare file for upload - use mimeType if available, otherwise default to image/jpeg
+      const fileType = asset.mimeType || "image/jpeg";
+
+      // Fetch the image file from local URI
+      const photoResp = await fetch(asset.uri);
+      if (!photoResp.ok) {
+        throw new Error(`Failed to read image: ${photoResp.status}`);
+      }
+
       const blob = await photoResp.blob();
-      const uploadResp = await fetch(postUrl, {
+
+      // Upload to Convex storage
+      console.log("[ProfileSetupPage] Uploading to Convex...");
+      const uploadResp = await fetch(uploadUrl, {
         method: "POST",
         headers: { "Content-Type": fileType },
         body: blob,
       });
-      console.log("[ProfileSetupPage] Upload response:", uploadResp);
-      const { storageId } = await uploadResp.json();
-      setPhotoStorageId(storageId);
+
+      if (!uploadResp.ok) {
+        const errorText = await uploadResp.text();
+        console.error("[ProfileSetupPage] Upload failed:", errorText);
+        throw new Error(`Upload failed: ${uploadResp.status} - ${errorText}`);
+      }
+
+      // Parse response - Convex returns the storage ID in the response body
+      const responseText = await uploadResp.text();
+
+      let storageId: string;
+      try {
+        // Try to parse as JSON first
+        const responseJson = JSON.parse(responseText);
+        storageId = responseJson.storageId || responseJson.id || responseJson;
+      } catch {
+        // If response is not JSON, it might be the storage ID directly as a string
+        storageId = responseText.trim();
+      }
+
+      if (!storageId || storageId === "") {
+        throw new Error("No storage ID received from upload");
+      }
+
+      setPhotoStorageId(storageId as Id<"_storage">);
       showToast("Photo uploaded successfully!");
     } catch (err) {
       showToast("Failed to upload photo");
+      // Reset photo state on error
+      setUploadedPhoto(null);
+      setPhotoStorageId(null);
     } finally {
       setIsUploading(false);
     }
@@ -410,7 +444,7 @@ export default function ProfileSetupPage() {
               <>
                 <TouchableOpacity
                   onPress={() => setShowCountryPicker(true)}
-                  className="bg-gray-700 border border-gray-600 rounded-md px-3 py-3 mb-2 flex-row items-center justify-between"
+                  className="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 mb-2 flex-row items-center justify-between"
                 >
                   <Text
                     className="text-base flex-1"
@@ -543,7 +577,7 @@ export default function ProfileSetupPage() {
                   <>
                     <TouchableOpacity
                       onPress={() => setShowStatePicker(true)}
-                      className="bg-gray-700 border border-gray-600 rounded-md px-3 py-3 mb-2 flex-row items-center justify-between"
+                      className="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 mb-2 flex-row items-center justify-between"
                     >
                       <Text
                         className="text-base flex-1"
@@ -728,7 +762,12 @@ export default function ProfileSetupPage() {
           <View className="flex-row mt-3">
             <View className="flex-1">
               {HUNTING_TYPES.slice(0, 3).map((type) => (
-                <View className="flex-row items-center mb-4" key={type.id}>
+                <TouchableOpacity
+                  className="flex-row items-center mb-4"
+                  key={type.id}
+                  activeOpacity={0.7}
+                  onPress={() => toggleHuntingPreference(type.id)}
+                >
                   <Checkbox
                     value={huntingPreferences.includes(type.id)}
                     onValueChange={() => toggleHuntingPreference(type.id)}
@@ -738,12 +777,17 @@ export default function ProfileSetupPage() {
                     style={{ marginRight: 8 }}
                   />
                   <Text className="text-sm text-gray-300">{type.label}</Text>
-                </View>
+                </TouchableOpacity>
               ))}
             </View>
             <View className="flex-1">
               {HUNTING_TYPES.slice(3, 6).map((type) => (
-                <View className="flex-row items-center mb-4" key={type.id}>
+                <TouchableOpacity
+                  className="flex-row items-center mb-4"
+                  key={type.id}
+                  activeOpacity={0.7}
+                  onPress={() => toggleHuntingPreference(type.id)}
+                >
                   <Checkbox
                     value={huntingPreferences.includes(type.id)}
                     onValueChange={() => toggleHuntingPreference(type.id)}
@@ -753,7 +797,7 @@ export default function ProfileSetupPage() {
                     style={{ marginRight: 8 }}
                   />
                   <Text className="text-sm text-gray-300">{type.label}</Text>
-                </View>
+                </TouchableOpacity>
               ))}
             </View>
           </View>
@@ -775,9 +819,11 @@ export default function ProfileSetupPage() {
             {/* 1st row */}
             <View className="flex-row">
               {WEAPON_TYPES.slice(0, 2).map((type) => (
-                <View
+                <TouchableOpacity
                   className="flex-1 flex-row items-center mb-4"
                   key={type.id}
+                  activeOpacity={0.7}
+                  onPress={() => toggleWeaponType(type.id)}
                 >
                   <Checkbox
                     value={weaponTypes.includes(type.id)}
@@ -788,15 +834,17 @@ export default function ProfileSetupPage() {
                     style={{ marginRight: 8 }}
                   />
                   <Text className="text-sm text-gray-300">{type.label}</Text>
-                </View>
+                </TouchableOpacity>
               ))}
             </View>
             {/* 2nd row */}
             <View className="flex-row">
               {WEAPON_TYPES.slice(2, 4).map((type) => (
-                <View
+                <TouchableOpacity
                   className="flex-1 flex-row items-center mb-4"
                   key={type.id}
+                  activeOpacity={0.7}
+                  onPress={() => toggleWeaponType(type.id)}
                 >
                   <Checkbox
                     value={weaponTypes.includes(type.id)}
@@ -807,7 +855,7 @@ export default function ProfileSetupPage() {
                     style={{ marginRight: 8 }}
                   />
                   <Text className="text-sm text-gray-300">{type.label}</Text>
-                </View>
+                </TouchableOpacity>
               ))}
             </View>
           </View>

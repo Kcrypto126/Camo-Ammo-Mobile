@@ -20,7 +20,7 @@ export default function TabsLayout() {
   return (
     <Stack
       screenOptions={{
-        headerShown: false,
+        headerShown: true,
       }}
     >
       <Stack.Screen name="dashboard" />
