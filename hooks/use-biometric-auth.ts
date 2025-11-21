@@ -1,3 +1,4 @@
+import * as SecureStore from "expo-secure-store";
 import { useCallback, useEffect, useState } from "react";
 
 interface BiometricAuthState {
@@ -5,6 +6,30 @@ interface BiometricAuthState {
   isEnabled: boolean;
   isSupported: boolean;
 }
+
+// Storage helper that uses SecureStore on React Native and localStorage on web
+const storage = {
+  getItem: async (key: string): Promise<string | null> => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      return window.localStorage.getItem(key);
+    }
+    return await SecureStore.getItemAsync(key);
+  },
+  setItem: async (key: string, value: string): Promise<void> => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      window.localStorage.setItem(key, value);
+    } else {
+      await SecureStore.setItemAsync(key, value);
+    }
+  },
+  removeItem: async (key: string): Promise<void> => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      window.localStorage.removeItem(key);
+    } else {
+      await SecureStore.deleteItemAsync(key);
+    }
+  },
+};
 
 export function useBiometricAuth() {
   const [state, setState] = useState<BiometricAuthState>({
@@ -16,23 +41,32 @@ export function useBiometricAuth() {
   useEffect(() => {
     // Check if WebAuthn is supported
     const isSupported =
+      typeof window !== "undefined" &&
       window.PublicKeyCredential !== undefined &&
       navigator.credentials !== undefined;
 
-    // Check if biometric is enabled in localStorage
-    const isEnabled = localStorage.getItem("biometric_enabled") === "true";
+    // Check if biometric is enabled in storage
+    const checkEnabled = async () => {
+      const enabled = (await storage.getItem("biometric_enabled")) === "true";
+      return enabled;
+    };
 
     // Check if platform authenticator (fingerprint/Face ID) is available
-    if (isSupported && window.PublicKeyCredential) {
+    if (
+      isSupported &&
+      typeof window !== "undefined" &&
+      window.PublicKeyCredential
+    ) {
       PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
-        .then((available) => {
+        .then(async (available) => {
+          const isEnabled = await checkEnabled();
           setState({
             isSupported,
             isAvailable: available,
             isEnabled: isEnabled && available,
           });
         })
-        .catch(() => {
+        .catch(async () => {
           setState({
             isSupported,
             isAvailable: false,
@@ -40,10 +74,12 @@ export function useBiometricAuth() {
           });
         });
     } else {
-      setState({
-        isSupported: false,
-        isAvailable: false,
-        isEnabled: false,
+      checkEnabled().then((isEnabled) => {
+        setState({
+          isSupported: false,
+          isAvailable: false,
+          isEnabled: false,
+        });
       });
     }
   }, []);
@@ -64,7 +100,10 @@ export function useBiometricAuth() {
             challenge,
             rp: {
               name: "Hunt Tracker",
-              id: window.location.hostname,
+              id:
+                typeof window !== "undefined" && window.location
+                  ? window.location.hostname
+                  : "localhost",
             },
             user: {
               id: new TextEncoder().encode(userId),
@@ -89,8 +128,8 @@ export function useBiometricAuth() {
 
         if (credential) {
           // Store credential ID and enable flag
-          localStorage.setItem("biometric_enabled", "true");
-          localStorage.setItem(
+          await storage.setItem("biometric_enabled", "true");
+          await storage.setItem(
             "biometric_credential_id",
             btoa(
               String.fromCharCode(
@@ -118,7 +157,7 @@ export function useBiometricAuth() {
         return false;
       }
 
-      const credentialId = localStorage.getItem("biometric_credential_id");
+      const credentialId = await storage.getItem("biometric_credential_id");
       if (!credentialId) {
         return false;
       }
@@ -151,9 +190,9 @@ export function useBiometricAuth() {
     }
   }, [state.isEnabled]);
 
-  const disableBiometric = useCallback(() => {
-    localStorage.removeItem("biometric_enabled");
-    localStorage.removeItem("biometric_credential_id");
+  const disableBiometric = useCallback(async () => {
+    await storage.removeItem("biometric_enabled");
+    await storage.removeItem("biometric_credential_id");
     setState((prev) => ({ ...prev, isEnabled: false }));
   }, []);
 
