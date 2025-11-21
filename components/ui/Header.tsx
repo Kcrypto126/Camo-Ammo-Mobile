@@ -15,7 +15,7 @@ export function Header({
   onNotificationPress,
 }: HeaderProps) {
   return (
-    <View className="bg-gray-900 px-4 py-3 flex-row items-center justify-between">
+    <View className="bg-gray-900 px-2 py-2 flex-row items-center justify-between">
       {/* Location Info */}
       <View className="flex-row items-center flex-1">
         <AntDesign name="environment" size={20} color="#f97316" />

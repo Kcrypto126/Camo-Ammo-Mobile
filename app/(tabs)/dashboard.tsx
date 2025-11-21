@@ -1,44 +1,149 @@
 import { BottomNav } from "@/components/ui/BottomNav";
-import { Header } from "@/components/ui/Header";
 import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
+import { useAuth } from "@/hooks/use-auth";
+import { useBiometricAuth } from "@/hooks/use-biometric-auth";
 import { useQuery } from "convex/react";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, Platform, Text, View } from "react-native";
 import ProfileSetupPage from "./ProfileSetupPage";
 import FriendsPage from "./friends";
 import HQPage from "./hq";
-import MapPage from "./map";
+import HuntingMap from "./map";
 import MyToolsPage from "./mytools";
 import ScoutingPage from "./scouting";
+
+const showToast = (msg: string) => {
+  if (Platform.OS === "android") {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const ToastAndroid = require("react-native").ToastAndroid;
+    ToastAndroid.show(msg, ToastAndroid.SHORT);
+  } else {
+    // eslint-disable-next-line no-alert
+    alert(msg);
+  }
+};
 
 export default function Dashboard() {
   const router = useRouter();
   const profile = useQuery(api.profile.getMyProfile);
   const [activeTab, setActiveTab] = useState("hq");
+  const { user } = useAuth();
+  const { isAvailable, isEnabled } = useBiometricAuth();
+  const userRole = useQuery(api.roles.getMyRole);
+  const [showFullMap, setShowFullMap] = useState(false);
+  const [showEmergencyDialog, setShowEmergencyDialog] = useState(false);
+  const [showLeaseReview, setShowLeaseReview] = useState(false);
+  const [showBiometricPrompt, setShowBiometricPrompt] = useState(false);
+  const [membersView, setMembersView] = useState<
+    | "main"
+    | "members"
+    | "bans"
+    | "subscriptions"
+    | "administrators"
+    | "permissions"
+    | "archived"
+    | "audit"
+    | "view_profile"
+  >("main");
+  const [selectedUserId, setSelectedUserId] = useState<Id<"users"> | null>(
+    null
+  );
+  const [showPublicProfile, setShowPublicProfile] = useState(false);
+  const [publicProfileUserId, setPublicProfileUserId] =
+    useState<Id<"users"> | null>(null);
+  const [showForumModeration, setShowForumModeration] = useState(false);
+  const [showOpenTicketsList, setShowOpenTicketsList] = useState(false);
+  const [showPendingPostsList, setShowPendingPostsList] = useState(false);
+  const [showReportedPostsList, setShowReportedPostsList] = useState(false);
 
-  const handleStartHunt = () => {
-    console.log("[Dashboard] Start Hunt pressed");
-    // Navigate to map or start tracking
-    setActiveTab("map");
-  };
-
-  const handleNotificationPress = () => {
-    console.log("[Dashboard] Notification pressed");
-    // Handle notification
-  };
+  const [showCreateLeaseDialog, setShowCreateLeaseDialog] = useState(false);
+  const [selectedLeaseId, setSelectedLeaseId] =
+    useState<Id<"landLeases"> | null>(null);
+  const [showLeaseDetailsDialog, setShowLeaseDetailsDialog] = useState(false);
+  const [showInquiryDialog, setShowInquiryDialog] = useState(false);
+  const [userLocation, setUserLocation] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
 
   const handleTabChange = (tab: string) => {
     console.log("[Dashboard] Tab changed to:", tab);
     setActiveTab(tab);
   };
 
+  const handleViewFullMap = () => {
+    setShowFullMap(true);
+    setActiveTab("map");
+  };
+
+  const handleStartTracking = () => {
+    setShowFullMap(true);
+    setActiveTab("map");
+    showToast("Starting GPS tracking. View the map to begin.");
+  };
+
+  const handleEmergency = () => {
+    setShowEmergencyDialog(true);
+  };
+
+  const handleEmergencyCall = (service: string) => {
+    setShowEmergencyDialog(false);
+    showToast(`Calling ${service}...`);
+    // In a real app, this would initiate a call or send an emergency alert
+  };
+
+  const handleNavigateToMarketplace = () => {
+    setActiveTab("marketplace");
+    setShowLeaseReview(false);
+  };
+
+  const handleNavigateToLeaseReview = () => {
+    setActiveTab("marketplace");
+    setShowLeaseReview(true);
+  };
+
+  const handleViewPublicProfile = (userId: Id<"users">) => {
+    setPublicProfileUserId(userId);
+    setShowPublicProfile(true);
+  };
+
+  const handleNavigateToForumModeration = () => {
+    setShowForumModeration(true);
+  };
+
+  const handleNavigateToOpenTickets = () => {
+    setShowOpenTicketsList(true);
+  };
+
+  const handleNavigateToPendingPosts = () => {
+    setShowPendingPostsList(true);
+  };
+
+  const handleNavigateToReportedPosts = () => {
+    setShowReportedPostsList(true);
+  };
+
   const renderContent = () => {
     switch (activeTab) {
       case "hq":
-        return <HQPage />;
+        return (
+          <HQPage
+            onViewFullMap={handleViewFullMap}
+            onStartTracking={handleStartTracking}
+            onEmergency={handleEmergency}
+            userRole={userRole || undefined}
+            onNavigateToForumModeration={handleNavigateToForumModeration}
+            onNavigateToOpenTickets={handleNavigateToOpenTickets}
+            onNavigateToPendingPosts={handleNavigateToPendingPosts}
+            onNavigateToReportedPosts={handleNavigateToReportedPosts}
+            activeTab={activeTab}
+            onTabChange={handleTabChange}
+          />
+        );
       case "map":
-        return <MapPage />;
+        return <HuntingMap />;
       case "scouting":
         return <ScoutingPage />;
       case "friends":
@@ -46,7 +151,20 @@ export default function Dashboard() {
       case "mytools":
         return <MyToolsPage />;
       default:
-        return <HQPage />;
+        return (
+          <HQPage
+            onViewFullMap={handleViewFullMap}
+            onStartTracking={handleStartTracking}
+            onEmergency={handleEmergency}
+            userRole={userRole || undefined}
+            onNavigateToForumModeration={handleNavigateToForumModeration}
+            onNavigateToOpenTickets={handleNavigateToOpenTickets}
+            onNavigateToPendingPosts={handleNavigateToPendingPosts}
+            onNavigateToReportedPosts={handleNavigateToReportedPosts}
+            activeTab={activeTab}
+            onTabChange={handleTabChange}
+          />
+        );
     }
   };
 
@@ -67,15 +185,7 @@ export default function Dashboard() {
 
   // Show main dashboard with header and bottom nav
   return (
-    <View className="flex-1 bg-gray-900 pt-6">
-      {/* Header - Only show on HQ tab */}
-      {activeTab === "hq" && (
-        <Header
-          onStartHunt={handleStartHunt}
-          onNotificationPress={handleNotificationPress}
-        />
-      )}
-
+    <View className="flex-1 bg-gray-900 pt-8">
       {/* Main Content */}
       <View className="flex-1">{renderContent()}</View>
 
