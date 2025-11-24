@@ -336,55 +336,87 @@ export default function MyHuntPage({
       showToast("Please fill in all required fields");
       return;
     }
-    try {
-      if (global?.navigator?.geolocation) {
-        showToast("Starting hunt...");
-        global.navigator.geolocation.getCurrentPosition(
-          async (position) => {
-            await startHunt({
-              title: newHunt.title,
-              locationName: newHunt.locationName,
-              lat: position.coords.latitude,
-              lng: position.coords.longitude,
-              species: newHunt.species,
-              method: newHunt.method || undefined,
-              notes: newHunt.notes || undefined,
-            });
-            showToast("Hunt started! Good luck!");
-            setShowStartDialog(false);
-            setNewHunt({
-              title: "",
-              locationName: "",
-              species: "",
-              method: "",
-              notes: "",
-            });
-          },
-          async () => {
-            await startHunt({
-              title: newHunt.title,
-              locationName: newHunt.locationName,
-              lat: 39.0997,
-              lng: -94.5786,
-              species: newHunt.species,
-              method: newHunt.method || undefined,
-              notes: newHunt.notes || undefined,
-            });
-            showToast("Hunt started! Good luck!");
-            setShowStartDialog(false);
-            setNewHunt({
-              title: "",
-              locationName: "",
-              species: "",
-              method: "",
-              notes: "",
-            });
-          }
-        );
+
+    const defaultLocation = { lat: 39.0997, lng: -94.5786 };
+
+    const startHuntWithLocation = async (lat: number, lng: number) => {
+      try {
+        await startHunt({
+          title: newHunt.title,
+          locationName: newHunt.locationName,
+          lat,
+          lng,
+          species: newHunt.species,
+          method: newHunt.method || undefined,
+          notes: newHunt.notes || undefined,
+        });
+        showToast("Hunt started! Good luck!");
+        setShowStartDialog(false);
+        setNewHunt({
+          title: "",
+          locationName: "",
+          species: "",
+          method: "",
+          notes: "",
+        });
+      } catch (error) {
+        console.error("[handleStartHunt] Error starting hunt:", error);
+        showToast("Failed to start hunt");
       }
-    } catch (error) {
-      showToast("Failed to start hunt");
-      console.error(error);
+    };
+
+    // Use existing location if available
+    if (location) {
+      console.log("[handleStartHunt] Using existing location:", location);
+      showToast("Starting hunt...");
+      await startHuntWithLocation(location.lat, location.lng);
+      return;
+    }
+
+    // Try to get current location
+    showToast("Starting hunt...");
+
+    const handleGeolocationSuccess = async (position: GeolocationPosition) => {
+      const coords = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+      };
+      console.log("[handleStartHunt] Geolocation success:", coords);
+      await startHuntWithLocation(coords.lat, coords.lng);
+    };
+
+    const handleGeolocationError = async (error: GeolocationPositionError) => {
+      console.error("[handleStartHunt] Geolocation error:", error);
+      console.log("[handleStartHunt] Using default location");
+      await startHuntWithLocation(defaultLocation.lat, defaultLocation.lng);
+    };
+
+    // Try web navigator.geolocation first
+    if (
+      Platform.OS === "web" &&
+      typeof navigator !== "undefined" &&
+      navigator.geolocation
+    ) {
+      navigator.geolocation.getCurrentPosition(
+        handleGeolocationSuccess,
+        handleGeolocationError,
+        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+      );
+    }
+    // Try global navigator for React Native
+    else if (global?.navigator?.geolocation) {
+      global.navigator.geolocation.getCurrentPosition(
+        handleGeolocationSuccess,
+        handleGeolocationError,
+        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+      );
+    }
+    // Fallback to default location
+    else {
+      console.log(
+        "[handleStartHunt] Geolocation not available, using default location"
+      );
+      await startHuntWithLocation(defaultLocation.lat, defaultLocation.lng);
     }
   };
 
@@ -549,7 +581,7 @@ export default function MyHuntPage({
             )}
 
           {/* Wind Analysis & Hunt Zone */}
-          <View className="flex-row gap-3 mb-4">
+          <View className="flex-row gap-3 mb-3">
             {/* Wind Analysis */}
             <View className="flex-1 rounded-xl bg-indigo-900/30 border border-indigo-700/30 p-3 items-center">
               <Compass color="#6366F1" size={30} style={tw`mb-2`} />
@@ -602,7 +634,7 @@ export default function MyHuntPage({
           </View>
 
           {/* Weather Cards */}
-          <View className="flex-row flex-wrap gap-3 mb-4">
+          <View className="flex-col gap-3 mb-3">
             {isLoadingWeather ? (
               <>
                 <WeatherSkeleton />
@@ -612,65 +644,73 @@ export default function MyHuntPage({
               </>
             ) : weather ? (
               <>
-                {/* Temperature */}
-                <View className="w-[48%] rounded-xl bg-orange-900/30 border border-orange-700/30 mb-3">
-                  <View className="p-4 flex-row justify-between">
-                    <View>
-                      <Text className="text-xs text-gray-300">Temperature</Text>
-                      <Text className="text-3xl font-bold text-white">
-                        {weather.temperature}°F
-                      </Text>
-                      <Text className="text-xs text-gray-400 capitalize">
-                        {weather.description}
-                      </Text>
+                <View className="flex-row justify-between gap-3">
+                  {/* Temperature */}
+                  <View className="flex-1 rounded-xl bg-orange-900/30 border border-orange-700/30">
+                    <View className="p-4 flex-row justify-between">
+                      <View>
+                        <Text className="text-xs text-gray-300">
+                          Temperature
+                        </Text>
+                        <Text className="text-3xl font-bold text-white">
+                          {weather.temperature}°F
+                        </Text>
+                        <Text className="text-xs text-gray-400 capitalize">
+                          {weather.description}
+                        </Text>
+                      </View>
+                      <Thermometer size={32} color="#F97316" />
                     </View>
-                    <Thermometer size={32} color="#F97316" />
+                  </View>
+
+                  {/* Wind */}
+                  <View className="flex-1 rounded-xl bg-blue-900/30 border border-blue-700/30">
+                    <View className="p-4 flex-row justify-between">
+                      <View>
+                        <Text className="text-xs text-gray-300">Wind</Text>
+                        <Text className="text-3xl font-bold text-white">
+                          {weather.windSpeed}
+                        </Text>
+                        <Text className="text-xs text-gray-400">
+                          mph {getWindDirection(weather.windDirection)}
+                        </Text>
+                      </View>
+                      <Wind size={32} color="#3B82F6" />
+                    </View>
                   </View>
                 </View>
 
-                {/* Wind */}
-                <View className="w-[48%] rounded-xl bg-blue-900/30 border border-blue-700/30 mb-3">
-                  <View className="p-4 flex-row justify-between">
-                    <View>
-                      <Text className="text-xs text-gray-300">Wind</Text>
-                      <Text className="text-3xl font-bold text-white">
-                        {weather.windSpeed}
-                      </Text>
-                      <Text className="text-xs text-gray-400">
-                        mph {getWindDirection(weather.windDirection)}
-                      </Text>
+                <View className="flex-row justify-between gap-3">
+                  {/* Rain Chance */}
+                  <View className="flex-1 rounded-xl bg-sky-900/30 border border-sky-700/30">
+                    <View className="p-4 flex-row justify-between">
+                      <View>
+                        <Text className="text-xs text-gray-300">
+                          Rain Chance
+                        </Text>
+                        <Text className="text-3xl font-bold text-white">
+                          {rainChance}%
+                        </Text>
+                        <Text className="text-xs text-gray-400">Next hour</Text>
+                      </View>
+                      <Droplets size={32} color="#38BDF8" />
                     </View>
-                    <Wind size={32} color="#3B82F6" />
                   </View>
-                </View>
 
-                {/* Rain Chance */}
-                <View className="w-[48%] rounded-xl bg-sky-900/30 border border-sky-700/30 mb-3">
-                  <View className="p-4 flex-row justify-between">
-                    <View>
-                      <Text className="text-xs text-gray-300">Rain Chance</Text>
-                      <Text className="text-3xl font-bold text-white">
-                        {rainChance}%
-                      </Text>
-                      <Text className="text-xs text-gray-400">Next hour</Text>
+                  {/* Humidity */}
+                  <View className="flex-1 rounded-xl bg-green-900/30 border border-green-700/30">
+                    <View className="p-4 flex-row justify-between">
+                      <View>
+                        <Text className="text-xs text-gray-300">Humidity</Text>
+                        <Text className="text-3xl font-bold text-white">
+                          {weather.humidity}%
+                        </Text>
+                        <Text className="text-xs text-gray-400">
+                          Feels {weather.feelsLike}°F
+                        </Text>
+                      </View>
+                      <Cloud size={32} color="#2DD4BF" />
                     </View>
-                    <Droplets size={32} color="#38BDF8" />
-                  </View>
-                </View>
-
-                {/* Humidity */}
-                <View className="w-[48%] rounded-xl bg-green-900/30 border border-green-700/30 mb-3">
-                  <View className="p-4 flex-row justify-between">
-                    <View>
-                      <Text className="text-xs text-gray-300">Humidity</Text>
-                      <Text className="text-3xl font-bold text-white">
-                        {weather.humidity}%
-                      </Text>
-                      <Text className="text-xs text-gray-400">
-                        Feels {weather.feelsLike}°F
-                      </Text>
-                    </View>
-                    <Cloud size={32} color="#2DD4BF" />
                   </View>
                 </View>
               </>
@@ -687,13 +727,13 @@ export default function MyHuntPage({
               const today = new Date();
               const times = SunCalc.getTimes(today, location.lat, location.lng);
               return (
-                <View className="flex-row gap-3 mb-4">
+                <View className="flex-row gap-3 mb-3">
                   {/* Sunrise */}
                   <View className="flex-1 rounded-xl bg-yellow-900/30 border border-yellow-700/30">
                     <View className="p-4 flex-row justify-between">
                       <View>
                         <Text className="text-xs text-gray-300">Sunrise</Text>
-                        <Text className="text-3xl font-bold text-white">
+                        <Text className="text-2xl font-bold text-white">
                           {format(times.sunrise, "h:mm a")}
                         </Text>
                         <Text className="text-xs text-gray-400">
@@ -708,7 +748,7 @@ export default function MyHuntPage({
                     <View className="p-4 flex-row justify-between">
                       <View>
                         <Text className="text-xs text-gray-300">Sunset</Text>
-                        <Text className="text-3xl font-bold text-white">
+                        <Text className="text-2xl font-bold text-white">
                           {format(times.sunset, "h:mm a")}
                         </Text>
                         <Text className="text-xs text-gray-400">
