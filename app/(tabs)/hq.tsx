@@ -936,12 +936,12 @@ export default function MyHuntPage({
                 <Text className="text-xs mt-2 text-white">WMA Brochures</Text>
               </Button>
               <Button
-                className="w-full py-4 mt-2 border border-red-500 bg-red-100"
+                className="w-full flex-row items-center justify-center py-4 mt-2 border border-red-500 bg-red-100"
                 type="ghost"
                 onPress={onEmergency}
               >
                 <AlertTriangle size={24} color="#DC2626" />
-                <Text className="text-xs text-red-700 mt-2">Emergency</Text>
+                <Text className="text-xs text-red-700 ml-2">Emergency</Text>
               </Button>
             </View>
           </View>
@@ -963,18 +963,20 @@ export default function MyHuntPage({
                 </View>
                 <View className="flex-row flex-wrap items-center gap-4 text-xs text-gray-400">
                   <View className="flex-row items-center mr-2">
-                    <Target size={14} />
-                    <Text className="ml-1 text-xs">{activeHunt.species}</Text>
+                    <Target size={14} color="#9ca3af" />
+                    <Text className="ml-1 text-xs text-gray-400">
+                      {activeHunt.species}
+                    </Text>
                   </View>
                   <View className="flex-row items-center mr-2">
-                    <Clock size={14} />
-                    <Text className="ml-1 text-xs">
+                    <Clock size={14} color="#9ca3af" />
+                    <Text className="ml-1 text-xs text-gray-400">
                       {format(activeHunt.startTime, "h:mm a")}
                     </Text>
                   </View>
                   <View className="flex-row items-center">
-                    <MapPin size={14} />
-                    <Text className="ml-1 text-xs">
+                    <MapPin size={14} color="#9ca3af" />
+                    <Text className="ml-1 text-xs text-gray-400">
                       {activeHunt.locationName}
                     </Text>
                   </View>
