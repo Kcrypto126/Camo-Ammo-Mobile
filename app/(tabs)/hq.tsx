@@ -3,6 +3,7 @@ import { useAction, useMutation, useQuery } from "convex/react";
 import React, { useCallback, useEffect, useState } from "react";
 import {
   Linking,
+  Platform,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -210,44 +211,80 @@ export default function MyHuntPage({
   );
 
   useEffect(() => {
-    if (typeof navigator !== "undefined" && navigator.geolocation) {
+    const defaultLocation = { lat: 39.0997, lng: -94.5786 };
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    let hasLoaded = false;
+
+    const loadWithDefaultLocation = () => {
+      if (hasLoaded) return; // Prevent multiple calls
+      hasLoaded = true;
+      if (timeoutId) clearTimeout(timeoutId);
+      console.log("[HQ] Using default location:", defaultLocation);
+      setLocation(defaultLocation);
+      loadWeatherData(defaultLocation.lat, defaultLocation.lng);
+      loadSolunarData(defaultLocation.lat, defaultLocation.lng);
+    };
+
+    const handleGeolocationSuccess = (position: GeolocationPosition) => {
+      if (hasLoaded) return; // Prevent multiple calls
+      hasLoaded = true;
+      if (timeoutId) clearTimeout(timeoutId);
+      const coords = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+      };
+      console.log("[HQ] Geolocation success:", coords);
+      setLocation(coords);
+      loadWeatherData(coords.lat, coords.lng);
+      loadSolunarData(coords.lat, coords.lng);
+    };
+
+    const handleGeolocationError = (error: GeolocationPositionError) => {
+      console.error("[HQ] Geolocation error:", error.code, error.message);
+      console.log("[HQ] Falling back to default location");
+      loadWithDefaultLocation();
+    };
+
+    // Set a timeout to ensure we always load data, even if geolocation hangs
+    timeoutId = setTimeout(() => {
+      if (!hasLoaded) {
+        console.log("[HQ] Geolocation timeout, using default location");
+        loadWithDefaultLocation();
+      }
+    }, 8000); // 8 second timeout
+
+    // Try web navigator.geolocation first
+    if (
+      Platform.OS === "web" &&
+      typeof navigator !== "undefined" &&
+      navigator.geolocation
+    ) {
+      console.log("[HQ] Using web navigator.geolocation");
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const coords = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          };
-          setLocation(coords);
-          loadWeatherData(coords.lat, coords.lng);
-          loadSolunarData(coords.lat, coords.lng);
-        },
-        (error) => {
-          console.error("Geolocation error:", error);
-          const defaultLocation = { lat: 39.0997, lng: -94.5786 };
-          setLocation(defaultLocation);
-          loadWeatherData(defaultLocation.lat, defaultLocation.lng);
-          loadSolunarData(defaultLocation.lat, defaultLocation.lng);
-        }
-      );
-    } else if (global?.navigator?.geolocation) {
-      global.navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const coords = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          };
-          setLocation(coords);
-          loadWeatherData(coords.lat, coords.lng);
-          loadSolunarData(coords.lat, coords.lng);
-        },
-        (error) => {
-          const defaultLocation = { lat: 39.0997, lng: -94.5786 };
-          setLocation(defaultLocation);
-          loadWeatherData(defaultLocation.lat, defaultLocation.lng);
-          loadSolunarData(defaultLocation.lat, defaultLocation.lng);
-        }
+        handleGeolocationSuccess,
+        handleGeolocationError,
+        { enableHighAccuracy: true, timeout: 7000, maximumAge: 0 }
       );
     }
+    // Try global navigator for React Native
+    else if (global?.navigator?.geolocation) {
+      console.log("[HQ] Using global.navigator.geolocation");
+      global.navigator.geolocation.getCurrentPosition(
+        handleGeolocationSuccess,
+        handleGeolocationError,
+        { enableHighAccuracy: true, timeout: 7000, maximumAge: 0 }
+      );
+    }
+    // Fallback to default location if geolocation is not available
+    else {
+      console.log("[HQ] Geolocation not available, using default location");
+      loadWithDefaultLocation();
+    }
+
+    // Cleanup function
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, [loadWeatherData, loadSolunarData]);
 
   const getWindDirection = (degrees: number) => {
