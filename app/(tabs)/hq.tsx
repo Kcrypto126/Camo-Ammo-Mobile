@@ -2,7 +2,6 @@ import { api } from "@/convex/_generated/api.js";
 import { useAction, useMutation, useQuery } from "convex/react";
 import React, { useCallback, useEffect, useState } from "react";
 import {
-  Alert,
   Linking,
   ScrollView,
   Text,
@@ -23,6 +22,7 @@ import { NotificationBell } from "@/components/ui/notification-bell";
 import { Select } from "@/components/ui/Select";
 import { Skeleton, WeatherSkeleton } from "@/components/ui/Skeleton";
 import { Textarea } from "@/components/ui/Textarea";
+import { showToast } from "@/components/ui/Toast";
 import {
   AlertTriangle,
   Calendar,
@@ -182,7 +182,7 @@ export default function MyHuntPage({
         setWeather(weatherData);
         setForecast(forecastData);
       } catch (error) {
-        Alert.alert("Failed to load weather data");
+        showToast("Failed to load weather data");
         console.error("Failed to load weather:", error);
       } finally {
         setIsLoadingWeather(false);
@@ -290,17 +290,18 @@ export default function MyHuntPage({
     if (location) {
       setWaypointDialogOpen(true);
     } else {
-      Alert.alert("Location not available");
+      showToast("Location not available");
     }
   };
 
   const handleStartHunt = async () => {
     if (!newHunt.title || !newHunt.locationName || !newHunt.species) {
-      Alert.alert("Please fill in all required fields");
+      showToast("Please fill in all required fields");
       return;
     }
     try {
       if (global?.navigator?.geolocation) {
+        showToast("Starting hunt...");
         global.navigator.geolocation.getCurrentPosition(
           async (position) => {
             await startHunt({
@@ -312,7 +313,7 @@ export default function MyHuntPage({
               method: newHunt.method || undefined,
               notes: newHunt.notes || undefined,
             });
-            Alert.alert("Hunt started! Good luck!");
+            showToast("Hunt started! Good luck!");
             setShowStartDialog(false);
             setNewHunt({
               title: "",
@@ -332,7 +333,7 @@ export default function MyHuntPage({
               method: newHunt.method || undefined,
               notes: newHunt.notes || undefined,
             });
-            Alert.alert("Hunt started! Good luck!");
+            showToast("Hunt started! Good luck!");
             setShowStartDialog(false);
             setNewHunt({
               title: "",
@@ -345,7 +346,7 @@ export default function MyHuntPage({
         );
       }
     } catch (error) {
-      Alert.alert("Failed to start hunt");
+      showToast("Failed to start hunt");
       console.error(error);
     }
   };
@@ -359,11 +360,11 @@ export default function MyHuntPage({
         harvested: endHuntData.successful ? endHuntData.harvested : undefined,
         notes: endHuntData.notes || undefined,
       });
-      Alert.alert("Hunt completed!");
+      showToast("Hunt completed!");
       setShowEndDialog(false);
       setEndHuntData({ successful: false, harvested: 0, notes: "" });
     } catch (error) {
-      Alert.alert("Failed to end hunt");
+      showToast("Failed to end hunt");
       console.error(error);
     }
   };
@@ -378,7 +379,7 @@ export default function MyHuntPage({
         <View className="border-b border-gray-700 bg-gray-800 px-4 py-3">
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-2">
-              <MapPin color="#4F46E5" size={22} />
+              <MapPin color="#ff6800" size={20} />
               <View>
                 <Text className="text-lg font-bold text-white">
                   {weather?.location || "HQ"}
@@ -397,8 +398,8 @@ export default function MyHuntPage({
                 onPress={() => setShowStartDialog(true)}
                 type="primary"
               >
-                <Plus size={16} style={tw`mr-2`} color="#fff" />
-                <Text className="text-white">Start Hunt</Text>
+                <Plus size={16} style={tw`mr-2`} />
+                <Text>Start Hunt</Text>
               </Button>
             </View>
           </View>
@@ -1059,8 +1060,10 @@ export default function MyHuntPage({
         visible={showStartDialog}
         onClose={() => setShowStartDialog(false)}
       >
-        <Label>Start New Hunt</Label>
-        <Text className="text-xs text-gray-500 mb-4">
+        <Text className="text-lg font-bold text-white mb-1">
+          Start New Hunt
+        </Text>
+        <Text className="text-xs text-gray-400 mb-4">
           Record the details of your hunt before heading out
         </Text>
         <View className="space-y-2">
@@ -1119,8 +1122,8 @@ export default function MyHuntPage({
 
       {/* End Hunt Dialog */}
       <Dialog visible={showEndDialog} onClose={() => setShowEndDialog(false)}>
-        <Label>End Hunt</Label>
-        <Text className="text-xs text-gray-500 mb-4">
+        <Text className="text-lg font-bold text-white mb-1">End Hunt</Text>
+        <Text className="text-xs text-gray-400 mb-4">
           Record the outcome of your hunt
         </Text>
         <View className="space-y-2">
@@ -1133,8 +1136,16 @@ export default function MyHuntPage({
                 setEndHuntData({ ...endHuntData, successful: true })
               }
             >
-              <CheckCircle2 size={16} style={tw`mr-1`} />
-              Success
+              <CheckCircle2
+                size={16}
+                style={tw`mr-1`}
+                color={endHuntData.successful ? "#fff" : "#9ca3af"}
+              />
+              <Text
+                className={endHuntData.successful ? "text-white" : "text-white"}
+              >
+                Success
+              </Text>
             </Button>
             <Button
               type={!endHuntData.successful ? "primary" : "outline"}
@@ -1147,8 +1158,12 @@ export default function MyHuntPage({
                 })
               }
             >
-              <XCircle size={16} style={tw`mr-1`} />
-              No Harvest
+              <XCircle
+                size={16}
+                style={tw`mr-1`}
+                color={!endHuntData.successful ? "#fff" : "#9ca3af"}
+              />
+              <Text className="text-white">No Harvest</Text>
             </Button>
           </View>
         </View>

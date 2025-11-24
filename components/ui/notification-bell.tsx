@@ -116,7 +116,7 @@ export function NotificationBell() {
         onPress={() => setOpen(true)}
         style={tw`relative h-9 w-9 items-center justify-center`}
       >
-        <Bell size={22} style={tw`text-gray-700`} />
+        <Bell size={20} color="#fff" />
         {unreadCount > 0 && (
           <View
             style={tw`absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-600 items-center justify-center`}
@@ -134,41 +134,46 @@ export function NotificationBell() {
         onRequestClose={() => setOpen(false)}
       >
         <Pressable
-          style={tw`flex-1 bg-black bg-opacity-30`}
+          style={tw`flex-1 bg-black bg-opacity-50 top-10`} // Make overlay a touch darker for emphasis
           onPress={() => setOpen(false)}
         />
         <View
-          style={tw`absolute self-end right-0 top-16 bg-white w-80 rounded-xl shadow-xl overflow-hidden`}
+          style={tw`absolute self-center top-16 w-80 rounded-xl shadow-xl overflow-hidden bg-[#181818] border border-[#272727]`}
         >
           <View
-            style={tw`flex-row items-center justify-between border-b border-gray-200 px-4 py-3 bg-gray-50`}
+            style={tw`flex-row items-center justify-between border-b border-[#232323] px-4 py-3 bg-[#1e1e1e]`}
           >
-            <Text style={tw`font-semibold text-base`}>Notifications</Text>
+            <Text style={tw`font-semibold text-base text-white`}>
+              Notifications
+            </Text>
             {unreadCount > 0 && (
-              <View style={tw`bg-gray-200 rounded px-2 py-0.5`}>
-                <Text style={tw`text-xs font-semibold text-gray-800`}>
+              <View style={tw`bg-[#232323] rounded px-2 py-0.5`}>
+                <Text style={tw`text-xs font-semibold text-gray-200`}>
                   {unreadCount} new
                 </Text>
               </View>
             )}
           </View>
-          <View style={tw`h-100`}>
+          <View style={tw`h-100 bg-transparent`}>
             <ScrollView contentContainerStyle={tw`flex-grow`}>
               {notifications === undefined ? (
                 <View style={tw`space-y-2 p-4`}>
                   {[1, 2, 3].map((i) => (
-                    <Skeleton key={i} className="h-20 w-full rounded-lg" />
+                    <Skeleton
+                      key={i}
+                      className="h-20 w-full rounded-lg bg-[#232323]"
+                    />
                   ))}
                 </View>
               ) : notifications.length === 0 ? (
                 <View
                   style={tw`flex flex-col items-center justify-center py-12 px-4`}
                 >
-                  <Bell size={48} style={tw`mb-3 text-gray-400`} />
-                  <Text style={tw`text-sm text-gray-500`}>
+                  <Bell size={48} style={tw`mb-3 text-[#3c3c3c]`} />
+                  <Text style={tw`text-sm text-gray-300`}>
                     No notifications yet
                   </Text>
-                  <Text style={tw`text-xs text-gray-400 mt-1`}>
+                  <Text style={tw`text-xs text-gray-500 mt-1`}>
                     You'll see updates about your posts here
                   </Text>
                 </View>
@@ -183,8 +188,8 @@ export function NotificationBell() {
                         key={notification._id}
                         style={[
                           tw`px-4 py-3`,
-                          !notification.isRead ? tw`bg-blue-50` : null,
-                          tw`border-b border-gray-100`,
+                          !notification.isRead ? tw`bg-[#23243b]` : null,
+                          tw`border-b border-[#232323]`,
                         ]}
                       >
                         <View style={tw`flex-row items-start gap-3`}>
@@ -197,7 +202,7 @@ export function NotificationBell() {
                             >
                               <Text
                                 numberOfLines={1}
-                                style={tw`text-sm font-medium flex-1`}
+                                style={tw`text-sm font-medium flex-1 text-white`}
                               >
                                 {notification.title}
                               </Text>
@@ -208,13 +213,13 @@ export function NotificationBell() {
                                   }
                                   style={tw`h-6 w-6 items-center justify-center ml-1`}
                                 >
-                                  <Check size={14} style={tw`text-gray-600`} />
+                                  <Check size={14} style={tw`text-gray-400`} />
                                 </TouchableOpacity>
                               )}
                             </View>
                             <Text
                               numberOfLines={2}
-                              style={tw`text-xs text-gray-500 mt-1`}
+                              style={tw`text-xs text-gray-400 mt-1`}
                             >
                               {notification.message}
                             </Text>
@@ -223,7 +228,7 @@ export function NotificationBell() {
                                 <View style={tw`flex-row gap-2`}>
                                   <TouchableOpacity
                                     style={[
-                                      tw`flex-1 h-7 rounded bg-white border border-gray-300 justify-center items-center`,
+                                      tw`flex-1 h-7 rounded bg-[#232323] border border-[#393939] justify-center items-center`,
                                       processingId === notification.relatedId
                                         ? tw`opacity-50`
                                         : null,
@@ -245,14 +250,14 @@ export function NotificationBell() {
                                         color="#888"
                                       />
                                     ) : (
-                                      <Text style={tw`text-xs text-gray-700`}>
+                                      <Text style={tw`text-xs text-gray-300`}>
                                         Still Waiting
                                       </Text>
                                     )}
                                   </TouchableOpacity>
                                   <TouchableOpacity
                                     style={[
-                                      tw`flex-1 h-7 rounded bg-white border border-gray-300 justify-center items-center`,
+                                      tw`flex-1 h-7 rounded bg-[#232323] border border-[#393939] justify-center items-center`,
                                       processingId === notification.relatedId
                                         ? tw`opacity-50`
                                         : null,
@@ -274,7 +279,7 @@ export function NotificationBell() {
                                         color="#888"
                                       />
                                     ) : (
-                                      <Text style={tw`text-xs text-gray-700`}>
+                                      <Text style={tw`text-xs text-gray-300`}>
                                         In Progress
                                       </Text>
                                     )}
@@ -310,7 +315,7 @@ export function NotificationBell() {
                                 </TouchableOpacity>
                               </View>
                             )}
-                            <Text style={tw`text-xs text-gray-400 mt-2`}>
+                            <Text style={tw`text-xs text-gray-600 mt-2`}>
                               {format(
                                 new Date(notification.createdAt),
                                 "MMM d, h:mm a"
@@ -326,10 +331,14 @@ export function NotificationBell() {
             </ScrollView>
           </View>
           {notifications && notifications.length > 0 && (
-            <View style={tw`border-t border-gray-200 px-4 py-2 bg-gray-100`}>
+            <View style={tw`border-t border-[#232323] px-4 py-2 bg-[#181818]`}>
               <TouchableOpacity
                 disabled={notifications.every((n) => n.isRead)}
-                style={tw`flex-row items-center justify-center w-full py-2 rounded ${notifications.every((n) => n.isRead) ? "opacity-50" : "bg-gray-200"}`}
+                style={tw`flex-row items-center justify-center w-full py-2 rounded ${
+                  notifications.every((n) => n.isRead)
+                    ? "opacity-50"
+                    : "bg-[#232323]"
+                }`}
                 onPress={async () => {
                   // Mark all as read
                   const unread = notifications.filter((n) => !n.isRead);
@@ -338,8 +347,8 @@ export function NotificationBell() {
                   }
                 }}
               >
-                <CheckCheck size={14} style={tw`mr-2 text-gray-700`} />
-                <Text style={tw`text-xs font-semibold text-gray-700`}>
+                <CheckCheck size={14} style={tw`mr-2 text-gray-400`} />
+                <Text style={tw`text-xs font-semibold text-gray-200`}>
                   Mark all as read
                 </Text>
               </TouchableOpacity>
