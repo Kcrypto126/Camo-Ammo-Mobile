@@ -1053,85 +1053,83 @@ export default function MyHuntPage({
           )}
 
           {/* Recent Hunts */}
-          <View className="rounded-xl bg-gray-800 border border-gray-700 mb-6">
+          <View className="rounded-xl bg-gray-800 border border-gray-700">
             <View className="px-4 pt-4">
               <Text className="text-base font-bold mb-2 text-white">
                 Recent Hunts
               </Text>
             </View>
-            <View className="h-80">
-              <ScrollView className="flex-1 px-4">
-                {hunts === undefined ? (
-                  [...Array(3)].map((_, i) => (
-                    <Skeleton key={i} className="h-16 mb-3" />
-                  ))
-                ) : hunts.length === 0 ? (
-                  <Text className="py-12 text-center text-sm text-gray-400">
-                    No hunts yet. Start your first hunt!
-                  </Text>
-                ) : (
-                  hunts.slice(0, 10).map((hunt) => (
-                    <TouchableOpacity
-                      key={hunt._id}
-                      className="p-4 border-b border-gray-700"
-                    >
-                      <View>
-                        <View className="flex-row items-center gap-2 mb-1">
-                          <Text className="font-semibold text-white">
-                            {hunt.title}
-                          </Text>
-                          {hunt.status === "completed" && (
-                            <Badge
-                              type={hunt.successful ? "success" : "secondary"}
-                            >
-                              {hunt.successful ? (
-                                <CheckCircle2
-                                  size={12}
-                                  color="#22C55E"
-                                  style={tw`mr-1`}
-                                />
-                              ) : (
-                                <XCircle
-                                  size={12}
-                                  color="#EF4444"
-                                  style={tw`mr-1`}
-                                />
-                              )}
-                              {hunt.successful ? "Success" : "No Harvest"}
-                            </Badge>
-                          )}
-                        </View>
-                        <View className="flex-row flex-wrap items-center gap-3 text-xs text-gray-400">
-                          <View className="flex-row items-center">
-                            <Target size={12} color="#9ca3af" />
-                            <Text className="ml-1 text-xs text-gray-400">
-                              {hunt.species}
-                            </Text>
-                          </View>
-                          <View className="flex-row items-center">
-                            <Calendar size={12} color="#9ca3af" />
-                            <Text className="ml-1 text-xs text-gray-400">
-                              {format(hunt.date, "MMM d, yyyy")}
-                            </Text>
-                          </View>
-                          <View className="flex-row items-center">
-                            <MapPin size={12} color="#9ca3af" />
-                            <Text className="ml-1 text-xs text-gray-400">
-                              {hunt.locationName}
-                            </Text>
-                          </View>
-                        </View>
-                        {hunt.notes && (
-                          <Text className="mt-2 text-xs text-gray-400">
-                            {hunt.notes}
-                          </Text>
+            <ScrollView className="flex-1 px-4 h-80">
+              {hunts === undefined ? (
+                [...Array(3)].map((_, i) => (
+                  <Skeleton key={i} className="h-16 mb-3" />
+                ))
+              ) : hunts.length === 0 ? (
+                <Text className="py-12 text-center text-sm text-gray-400">
+                  No hunts yet. Start your first hunt!
+                </Text>
+              ) : (
+                hunts.slice(0, 10).map((hunt) => (
+                  <TouchableOpacity
+                    key={hunt._id}
+                    className="p-4 border-b border-gray-700"
+                  >
+                    <View>
+                      <View className="flex-row items-center gap-2 mb-1">
+                        <Text className="font-semibold text-white">
+                          {hunt.title}
+                        </Text>
+                        {hunt.status === "completed" && (
+                          <Badge
+                            type={hunt.successful ? "success" : "secondary"}
+                          >
+                            {hunt.successful ? (
+                              <CheckCircle2
+                                size={12}
+                                color="#22C55E"
+                                style={tw`mr-1`}
+                              />
+                            ) : (
+                              <XCircle
+                                size={12}
+                                color="#EF4444"
+                                style={tw`mr-1`}
+                              />
+                            )}
+                            {hunt.successful ? "Success" : "No Harvest"}
+                          </Badge>
                         )}
                       </View>
-                    </TouchableOpacity>
-                  ))
-                )}
-              </ScrollView>
-            </View>
+                      <View className="flex-row flex-wrap items-center gap-3 text-xs text-gray-400">
+                        <View className="flex-row items-center">
+                          <Target size={12} color="#9ca3af" />
+                          <Text className="ml-1 text-xs text-gray-400">
+                            {hunt.species}
+                          </Text>
+                        </View>
+                        <View className="flex-row items-center">
+                          <Calendar size={12} color="#9ca3af" />
+                          <Text className="ml-1 text-xs text-gray-400">
+                            {format(hunt.date, "MMM d, yyyy")}
+                          </Text>
+                        </View>
+                        <View className="flex-row items-center">
+                          <MapPin size={12} color="#9ca3af" />
+                          <Text className="ml-1 text-xs text-gray-400">
+                            {hunt.locationName}
+                          </Text>
+                        </View>
+                      </View>
+                      {hunt.notes && (
+                        <Text className="mt-2 text-xs text-gray-400">
+                          {hunt.notes}
+                        </Text>
+                      )}
+                    </View>
+                  </TouchableOpacity>
+                ))
+              )}
+            </ScrollView>
           </View>
         </View>
       </ScrollView>
