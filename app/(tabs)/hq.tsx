@@ -855,13 +855,15 @@ export default function MyHuntPage({
                 className="px-2 py-1"
                 onPress={onViewFullMap}
               >
-                <Eye color="#4F46E5" size={16} style={tw`mr-2`} />
-                <Text className="text-blue-700">View Map</Text>
+                <Eye color="#fff" size={16} style={tw`mr-2`} />
+                <Text className="text-white">View Map</Text>
               </Button>
             </View>
-            <Text>Map Preview not available in React Native</Text>
-            {/* <View className="mx-3 mt-3 mb-4 h-48 overflow-hidden rounded-xl bg-gray-200">
-              {location ? (
+            <View className="mx-3 mt-3 mb-4 h-48 overflow-hidden rounded-xl bg-gray-700 flex items-center justify-center">
+              <Text className="text-center text-sm text-white">
+                Map Preview not available now.
+              </Text>
+              {/* {location ? (
                 <MapView
                   style={[tw`flex-1`]}
                   region={{
@@ -889,8 +891,8 @@ export default function MyHuntPage({
                   color="#3B82F6"
                   size="large"
                 />
-              )}
-            </View> */}
+              )} */}
+            </View>
           </View>
 
           {/* Quick Actions */}
@@ -902,7 +904,7 @@ export default function MyHuntPage({
             </View>
             <View className="flex-row flex-wrap pb-4 px-2 gap-3">
               <Button
-                className="w-[48%] py-4 my-1 justify-center items-center border border-gray-600 bg-gray-700"
+                className="w-[48%] flex-col py-4 justify-center items-center border border-gray-600 bg-gray-700"
                 type="outline"
                 onPress={onViewFullMap}
               >
@@ -910,7 +912,7 @@ export default function MyHuntPage({
                 <Text className="text-xs mt-2 text-white">Property Info</Text>
               </Button>
               <Button
-                className="w-[48%] py-4 my-1 justify-center items-center border border-gray-600 bg-gray-700"
+                className="w-[48%] flex-col py-4 justify-center items-center border border-gray-600 bg-gray-700"
                 type="outline"
                 onPress={handleAddMarker}
               >
@@ -918,7 +920,7 @@ export default function MyHuntPage({
                 <Text className="text-xs mt-2 text-white">Add Marker</Text>
               </Button>
               <Button
-                className="w-[48%] py-4 my-1 justify-center items-center border border-gray-600 bg-gray-700"
+                className="w-[48%] flex-col py-4 justify-center items-center border border-gray-600 bg-gray-700"
                 type="outline"
                 onPress={onStartTracking}
               >
@@ -926,7 +928,7 @@ export default function MyHuntPage({
                 <Text className="text-xs mt-2 text-white">Track Path</Text>
               </Button>
               <Button
-                className="w-[48%] py-4 my-1 justify-center items-center border border-gray-600 bg-gray-700"
+                className="w-[48%] flex-col py-4 justify-center items-center border border-gray-600 bg-gray-700"
                 type="outline"
                 onPress={() => Linking.openURL("https://www.floridamarine.org")}
               >

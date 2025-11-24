@@ -1,7 +1,10 @@
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
+import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
+import { showToast } from "@/components/ui/Toast";
 import { api } from "@/convex/_generated/api.js";
 import { useMutation } from "convex/react";
 import { useState } from "react";
@@ -10,12 +13,8 @@ import {
   Platform,
   ScrollView,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
-
-// simple Toast substitute for React Native
-import { Alert } from "react-native";
 
 interface AddWaypointDialogProps {
   open: boolean;
@@ -26,13 +25,23 @@ interface AddWaypointDialogProps {
 }
 
 const waypointTypes = [
-  { value: "stand", label: "Tree Stand" },
-  { value: "blind", label: "Blind" },
-  { value: "camera", label: "Trail Camera" },
-  { value: "marker", label: "Marker" },
-  { value: "parking", label: "Parking" },
-  { value: "camp", label: "Camp" },
+  "Tree Stand",
+  "Blind",
+  "Trail Camera",
+  "Marker",
+  "Parking",
+  "Camp",
 ];
+
+// Map display labels to API values
+const typeValueMap: Record<string, string> = {
+  "Tree Stand": "stand",
+  Blind: "blind",
+  "Trail Camera": "camera",
+  Marker: "marker",
+  Parking: "parking",
+  Camp: "camp",
+};
 
 export default function AddWaypointDialog({
   open,
@@ -43,46 +52,40 @@ export default function AddWaypointDialog({
 }: AddWaypointDialogProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [type, setType] = useState("marker");
+  const [type, setType] = useState("Marker");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [typeMenuOpen, setTypeMenuOpen] = useState(false);
 
   const createWaypoint = useMutation(api.waypoints.createWaypoint);
 
   async function handleSubmit() {
     if (!name.trim()) {
-      Alert.alert("Validation", "Please enter a name");
+      showToast("Please enter a name");
       return;
     }
     setIsSubmitting(true);
     try {
+      // Convert label back to value for API
+      const typeValue = typeValueMap[type] || "marker";
       await createWaypoint({
         name: name.trim(),
         description: description.trim() || undefined,
         lat,
         lng,
         altitude,
-        type,
+        type: typeValue,
       });
-      Alert.alert("Success", "Waypoint added");
+      showToast("Waypoint added");
       onOpenChange(false);
       setName("");
       setDescription("");
-      setType("marker");
+      setType("Marker");
     } catch (error) {
-      Alert.alert("Error", "Failed to add waypoint");
+      showToast("Failed to add waypoint");
       console.error(error);
     } finally {
       setIsSubmitting(false);
     }
   }
-
-  // Label (just a <Text> with semibold style and margin)
-  const Label = ({ children }: { children: React.ReactNode }) => (
-    <Text className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1">
-      {children}
-    </Text>
-  );
 
   return (
     <Dialog visible={open} onClose={() => onOpenChange(false)}>
@@ -96,17 +99,15 @@ export default function AddWaypointDialog({
         >
           <View className="space-y-3">
             {/* Header */}
-            <View className="mb-2">
-              <Text className="text-lg font-bold text-gray-900 dark:text-gray-100">
-                Add Waypoint
-              </Text>
-              <Text className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                Mark this location for future reference
-              </Text>
-            </View>
+            <Text className="text-lg font-bold text-white mb-1">
+              Add Waypoint
+            </Text>
+            <Text className="text-xs text-gray-400 mb-4">
+              Mark this location for future reference
+            </Text>
 
             {/* Name input */}
-            <View className="mb-2">
+            <View className="space-y-2">
               <Label>Name *</Label>
               <Input
                 value={name}
@@ -116,42 +117,19 @@ export default function AddWaypointDialog({
               />
             </View>
 
-            {/* Type select (custom) */}
-            <View className="mb-2">
+            {/* Type select */}
+            <View className="space-y-2 mt-2">
               <Label>Type</Label>
-              <TouchableOpacity
-                className="border px-3 py-2 rounded-lg flex-row items-center justify-between bg-gray-50 dark:bg-gray-800"
-                onPress={() => setTypeMenuOpen((v) => !v)}
-                activeOpacity={0.8}
-              >
-                <Text className="text-base">
-                  {waypointTypes.find((wt) => wt.value === type)?.label ||
-                    "Select type"}
-                </Text>
-                <Text className="text-lg text-gray-400">
-                  {typeMenuOpen ? "▲" : "▼"}
-                </Text>
-              </TouchableOpacity>
-              {typeMenuOpen && (
-                <View className="mt-2 border bg-white dark:bg-gray-800 rounded-lg shadow p-1">
-                  {waypointTypes.map((wt) => (
-                    <TouchableOpacity
-                      key={wt.value}
-                      className={`px-3 py-2 rounded ${type === wt.value ? "bg-emerald-100 dark:bg-emerald-800" : ""}`}
-                      onPress={() => {
-                        setType(wt.value);
-                        setTypeMenuOpen(false);
-                      }}
-                    >
-                      <Text className="text-base">{wt.label}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              )}
+              <Select
+                options={waypointTypes}
+                value={type}
+                onChange={setType}
+                placeholder="Select type"
+              />
             </View>
 
             {/* Description input */}
-            <View className="mb-2">
+            <View className="space-y-2 mt-2">
               <Label>Description</Label>
               <Textarea
                 value={description}
@@ -177,12 +155,11 @@ export default function AddWaypointDialog({
             </View>
 
             {/* Buttons */}
-            <View className="flex-row justify-end gap-2 mt-1">
+            <View className="flex-row justify-between mt-4">
               <Button
                 type="outline"
                 onPress={() => onOpenChange(false)}
                 disabled={isSubmitting}
-                className="mr-2"
               >
                 Cancel
               </Button>
