@@ -18,7 +18,7 @@ export function Textarea({
   return (
     <TextInput
       className={clsx(
-        "border px-3 py-2 rounded-lg h-20 text-base bg-gray-50 dark:bg-gray-800",
+        "border border-gray-600 px-3 py-2 rounded-lg h-20 text-base bg-gray-700 text-white",
         className
       )}
       value={value}
@@ -26,7 +26,7 @@ export function Textarea({
       placeholder={placeholder}
       multiline
       textAlignVertical="top"
-      placeholderTextColor="#aaa"
+      placeholderTextColor="#9ca3af"
       {...rest}
     />
   );

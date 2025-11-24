@@ -18,13 +18,13 @@ export function Input({
   return (
     <TextInput
       className={clsx(
-        "border px-3 py-2 rounded-lg text-base bg-gray-50 dark:bg-gray-800",
+        "border border-gray-600 px-3 py-2 rounded-lg text-base bg-gray-700 text-white",
         className
       )}
       value={value}
       onChangeText={onChangeText}
       placeholder={placeholder}
-      placeholderTextColor="#aaa"
+      placeholderTextColor="#9ca3af"
       {...rest}
     />
   );

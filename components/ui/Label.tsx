@@ -10,7 +10,7 @@ export function Label({ children, className = "" }: LabelProps) {
   return (
     <Text
       className={clsx(
-        "text-xs mb-1 font-semibold text-gray-800 dark:text-gray-100",
+        "text-sm mb-1 font-semibold text-white",
         className
       )}
     >

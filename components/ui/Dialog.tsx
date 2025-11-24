@@ -13,20 +13,21 @@ export function Dialog({ visible, onClose, children, className }: DialogProps) {
   return (
     <View
       className={clsx(
-        "absolute top-0 left-0 right-0 bottom-0 bg-black/30 justify-center items-center z-50",
+        "absolute top-0 left-0 right-0 bottom-0 bg-black/50 justify-center items-center z-50",
         className
       )}
     >
-      <View className="bg-white dark:bg-gray-900 p-5 rounded-xl w-11/12">
+      <View className="bg-gray-800 border border-gray-700 p-5 rounded-xl w-11/12 relative">
+        <TouchableOpacity
+          onPress={onClose}
+          className="absolute top-2 right-2 p-2 z-10"
+        >
+          <View className="bg-gray-700 rounded-full w-8 h-8 items-center justify-center">
+            <Text className="text-lg font-bold text-white">✕</Text>
+          </View>
+        </TouchableOpacity>
         {children}
       </View>
-      <TouchableOpacity
-        onPress={onClose}
-        className="absolute top-0 right-0 p-4"
-      >
-        <Text className="text-lg font-bold text-gray-400">✕</Text>
-      </TouchableOpacity>
     </View>
   );
 }
-
