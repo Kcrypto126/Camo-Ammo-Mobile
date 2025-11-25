@@ -16,10 +16,10 @@ import { MapTypeControl, type RNMapType } from "@/components/ui/MapTypeControl";
 import { showToast } from "@/components/ui/Toast";
 
 // Import other components when ready
-// import TrackingControl from "@/components/tracking/TrackingControl";
-// import WeatherPanel from "@/components/weather/WeatherPanel";
-// import HuntingUnitPanel from "@/components/map/HuntingUnitPanel";
-// import PropertyDetailsPanel from "@/components/map/PropertyDetailsPanel";
+import HuntingUnitPanel from "@/components/map/HuntingUnitPanel";
+import PropertyDetailsPanel from "@/components/map/PropertyDetailsPanel";
+import TrackingControl from "@/components/tracking/TrackingControl";
+import WeatherPanel from "@/components/weather/WeatherPanel";
 
 interface HuntingMapProps {
   initialCenter?: { lat: number; lng: number };
@@ -172,7 +172,7 @@ export default function HuntingMap({
   }
 
   return (
-    <View className="flex-1 px-2 py-2 relative bg-zinc-900">
+    <View className="flex-1 relative bg-zinc-900">
       <MapView
         ref={mapRef}
         style={{ flex: 1 }}
@@ -232,7 +232,7 @@ export default function HuntingMap({
       </MapView>
 
       {/* Map Type Selector */}
-      <View className="absolute top-4 left-4 z-50">
+      <View className="absolute top-2 right-3 z-50">
         <MapTypeControl mapType={mapType} onMapTypeChange={setMapType} />
       </View>
 
@@ -250,35 +250,35 @@ export default function HuntingMap({
         <LayerControl layers={layers} onLayerToggle={handleLayerToggle} />
 
         {/* Tracking Control - Uncomment when component is ready */}
-        {/* <TrackingControl
+        <TrackingControl
           onWaypointAdd={handleWaypointAdd}
           onLocationUpdate={handleLocationUpdate}
-        /> */}
+        />
 
         {/* Weather Panel - Uncomment when component is ready */}
-        {/* {showWeather && (
+        {showWeather && (
           <WeatherPanel
             lat={weatherLocation.lat}
             lng={weatherLocation.lng}
             onClose={() => setShowWeather(false)}
           />
-        )} */}
+        )}
 
         {/* Property Details Panel - Uncomment when component is ready */}
-        {/* {!showWeather && selectedProperty && (
+        {!showWeather && selectedProperty && (
           <PropertyDetailsPanel
             property={selectedProperty}
             onClose={() => setSelectedProperty(null)}
           />
-        )} */}
+        )}
 
         {/* Hunting Unit Panel - Uncomment when component is ready */}
-        {/* {!showWeather && !selectedProperty && selectedHuntingUnit && (
+        {!showWeather && !selectedProperty && selectedHuntingUnit && (
           <HuntingUnitPanel
             unit={selectedHuntingUnit}
             onClose={() => setSelectedHuntingUnit(null)}
           />
-        )} */}
+        )}
 
         {/* Waypoint Dialog */}
         {waypointLocation && (
