@@ -2,6 +2,7 @@ import { api } from "@/convex/_generated/api.js";
 import { useAction, useMutation, useQuery } from "convex/react";
 import React, { useCallback, useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Linking,
   Platform,
   ScrollView,
@@ -11,8 +12,6 @@ import {
 } from "react-native";
 import * as SunCalc from "suncalc";
 
-import { format } from "date-fns";
-// import MapView, { Marker } from "react-native-maps";
 import AddWaypointDialog from "@/components/tracking/AddWaypointDialog";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -24,6 +23,7 @@ import { Select } from "@/components/ui/Select";
 import { Skeleton, WeatherSkeleton } from "@/components/ui/Skeleton";
 import { Textarea } from "@/components/ui/Textarea";
 import { showToast } from "@/components/ui/Toast";
+import { format } from "date-fns";
 import {
   AlertTriangle,
   Calendar,
@@ -47,6 +47,7 @@ import {
   Wind,
   XCircle,
 } from "lucide-react-native";
+import MapView, { Marker } from "react-native-maps";
 import tw from "twrnc"; // still for e.g. icon margins
 
 const SPECIES_OPTIONS = [
@@ -859,22 +860,22 @@ export default function MyHuntPage({
                 <Text className="text-white">View Map</Text>
               </Button>
             </View>
-            <View className="mx-3 mt-3 mb-4 h-48 overflow-hidden rounded-xl bg-gray-700 flex items-center justify-center">
-              <Text className="text-center text-sm text-white">
-                Map Preview not available now.
-              </Text>
-              {/* {location ? (
+            <View className="mx-3 mt-3 mb-4 h-48 overflow-hidden rounded-xl bg-gray-700">
+              {location ? (
                 <MapView
-                  style={[tw`flex-1`]}
-                  region={{
+                  style={{ flex: 1, width: "100%", height: "100%" }}
+                  initialRegion={{
                     latitude: location.lat,
                     longitude: location.lng,
                     latitudeDelta: 0.02,
                     longitudeDelta: 0.02,
                   }}
-                  showsUserLocation
+                  showsUserLocation={true}
+                  showsMyLocationButton={false}
                   scrollEnabled={false}
                   zoomEnabled={false}
+                  pitchEnabled={false}
+                  rotateEnabled={false}
                   pointerEvents="none"
                   mapType="hybrid"
                 >
@@ -883,15 +884,35 @@ export default function MyHuntPage({
                       latitude: location.lat,
                       longitude: location.lng,
                     }}
+                    title="Your Location"
                   />
                 </MapView>
               ) : (
-                <ActivityIndicator
-                  style={tw`h-full`}
-                  color="#3B82F6"
-                  size="large"
+                <View className="flex-1 items-center justify-center">
+                  <ActivityIndicator color="#3B82F6" size="large" />
+                  <Text className="text-center text-sm text-gray-400 mt-2">
+                    Loading location...
+                  </Text>
+                </View>
+              )}
+              {/* <MapView
+                style={{ flex: 1, width: "100%", height: "100%" }}
+                provider="google"
+                initialRegion={{
+                  latitude: 37.78825,
+                  longitude: -122.4324,
+                  latitudeDelta: 0.0922,
+                  longitudeDelta: 0.0421,
+                }}
+              >
+                <Marker
+                  coordinate={{
+                    latitude: 37.78825,
+                    longitude: -122.4324,
+                  }}
+                  title="Marker"
                 />
-              )} */}
+              </MapView> */}
             </View>
           </View>
 
