@@ -26,7 +26,7 @@ export default function LayerControl({
   const [visible, setVisible] = useState(false);
 
   return (
-    <View className="absolute top-14 right-2 z-50">
+    <View className="absolute top-12 right-3 z-50">
       <TouchableOpacity
         className="flex-row items-center gap-1 bg-zinc-900/90 px-4 py-2 rounded-lg shadow-lg"
         onPress={() => setVisible(true)}
@@ -54,7 +54,7 @@ export default function LayerControl({
           onPress={() => setVisible(false)}
         >
           <View
-            className="absolute right-2 top-20 w-[220px] rounded-xl bg-zinc-900 shadow-xl px-0 py-2"
+            className="absolute right-3 top-[108px] w-[220px] rounded-xl bg-zinc-900 shadow-xl px-0 py-2"
             style={{ elevation: 8 }}
           >
             <Text className="text-orange-400 uppercase px-4 pb-1 font-bold text-xs">
