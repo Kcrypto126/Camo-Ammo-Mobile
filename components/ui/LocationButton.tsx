@@ -27,15 +27,18 @@ export function LocationButton({
             longitude: position.coords.longitude,
           };
           console.log("[LocationButton] Position obtained:", pos);
-          // Animate to position if possible (expo-maps uses setCameraPosition)
-          if (mapRef?.current && mapRef.current.setCameraPosition) {
-            mapRef.current.setCameraPosition({
-              coordinates: {
+          // Animate to position using react-native-maps animateToRegion
+          if (mapRef?.current && mapRef.current.animateToRegion) {
+            const delta = 0.01; // Equivalent to zoom level ~15
+            mapRef.current.animateToRegion(
+              {
                 latitude: pos.latitude,
                 longitude: pos.longitude,
+                latitudeDelta: delta,
+                longitudeDelta: delta,
               },
-              zoom: 15, // Equivalent to ~0.01 delta
-            });
+              1000
+            );
           }
           onLocationUpdate(pos.latitude, pos.longitude);
           setLoading(false);
@@ -77,4 +80,3 @@ export function LocationButton({
     </View>
   );
 }
-
