@@ -167,6 +167,8 @@ export default function MyHuntPage({
     isAdmin ? { status: "open" } : "skip"
   );
 
+  console.log("[HQ] userRole:", userRole);
+
   const startHunt = useMutation(api.hunts.startHunt);
   const endHunt = useMutation(api.hunts.endHunt);
   const getCurrentWeather = useAction(api.weather.getCurrentWeather);
@@ -463,13 +465,11 @@ export default function MyHuntPage({
             </View>
             <View className="flex-row items-center gap-2">
               <NotificationBell />
-              <Button
-                className="ml-2 px-3 py-1"
-                onPress={() => setShowStartDialog(true)}
-                type="primary"
-              >
-                <Plus size={16} style={tw`mr-2`} />
-                <Text>Start Hunt</Text>
+              <Button type="primary" onPress={() => setShowStartDialog(true)}>
+                <View className="flex-row items-center gap-1">
+                  <Plus size={16} color="#000" />
+                  <Text className="font-semibold">Start Hunt</Text>
+                </View>
               </Button>
             </View>
           </View>
