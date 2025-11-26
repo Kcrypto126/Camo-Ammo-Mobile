@@ -140,7 +140,7 @@ export default function TripDetailsDialog({
   return (
     <Dialog visible={open} onClose={() => onOpenChange(false)}>
       <ScrollView className="max-h-[90vh]" showsVerticalScrollIndicator={true}>
-        <View className="space-y-6">
+        <View className="flex flex-col gap-2">
           {/* Header */}
           <View className="space-y-2">
             <Text className="text-xl font-bold text-white">

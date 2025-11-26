@@ -116,7 +116,7 @@ export default function CreateTripDialog({
   return (
     <Dialog visible={open} onClose={() => onOpenChange(false)}>
       <ScrollView className="max-h-[70vh]" showsVerticalScrollIndicator={true}>
-        <View className="flex flex-col gap-2">
+        <View className="flex flex-col gap-2 pr-[2px]">
           {/* Header */}
           <View className="space-y-1">
             <Text className="text-xl font-bold text-white">
@@ -255,7 +255,7 @@ export default function CreateTripDialog({
                     setEndDate("");
                   }
                 }}
-                placeholder="Select start date"
+                placeholder="Start date"
                 minimumDate={new Date()}
               />
             </View>
@@ -267,7 +267,7 @@ export default function CreateTripDialog({
               <DatePickerInput
                 value={endDate}
                 onChange={setEndDate}
-                placeholder="Select end date"
+                placeholder="End date"
                 minimumDate={startDate ? new Date(startDate) : new Date()}
               />
             </View>
