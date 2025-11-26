@@ -143,9 +143,13 @@ export default function Dashboard() {
           />
         );
       case "map":
-        return <HuntingMap />;
+        return (
+          <HuntingMap
+            onLocationUpdate={(lat, lng) => setUserLocation({ lat, lng })}
+          />
+        );
       case "scouting":
-        return <ScoutingPage />;
+        return <ScoutingPage onViewProfile={handleViewPublicProfile} />;
       case "friends":
         return <FriendsPage />;
       case "mytools":

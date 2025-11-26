@@ -4,6 +4,8 @@
   "version": "1.0.0",
   "scripts": {
     "start": "expo start",
+    "dev": "expo start --dev-client",
+    "backend": "npx convex dev",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",
     "ios": "expo run:ios",
@@ -17,6 +19,7 @@
     "@react-email/components": "^1.0.1",
     "@react-email/render": "^2.0.0",
     "@react-native-community/checkbox": "^0.5.20",
+    "@react-native-community/datetimepicker": "8.4.4",
     "@react-native-picker/picker": "^2.11.4",
     "@react-navigation/bottom-tabs": "^7.4.0",
     "@react-navigation/elements": "^2.6.3",
