@@ -76,7 +76,7 @@ export default function ScoutingTripsPanel({
       onPress={() => setSelectedTripId(trip._id)}
       activeOpacity={0.7}
     >
-      <View className="space-y-3">
+      <View className="flex flex-col gap-1">
         <View className="flex-row items-start justify-between gap-2">
           <View className="flex-1" style={{ minWidth: 0 }}>
             <Text className="font-semibold text-white" numberOfLines={1}>
@@ -130,7 +130,7 @@ export default function ScoutingTripsPanel({
           </View>
         </View>
 
-        <View className="flex-row items-center justify-end mt-2">
+        <View className="flex-row items-center justify-end">
           <Button type="ghost" onPress={() => setSelectedTripId(trip._id)}>
             <View className="flex-row items-center gap-1">
               <Text className="text-white text-sm">View Details</Text>
