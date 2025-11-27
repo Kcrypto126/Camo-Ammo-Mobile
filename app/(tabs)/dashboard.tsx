@@ -1,4 +1,5 @@
 import { BottomNav } from "@/components/ui/BottomNav";
+import { Sheet, SheetContent } from "@/components/ui/Sheet";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useAuth } from "@/hooks/use-auth";
@@ -8,6 +9,7 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Platform, Text, View } from "react-native";
 import ProfileSetupPage from "./ProfileSetupPage";
+import PublicProfilePage from "./PublicProfilePage";
 import FriendsPage from "./friends";
 import HQPage from "./hq";
 import HuntingMap from "./map";
@@ -151,7 +153,7 @@ export default function Dashboard() {
       case "scouting":
         return <ScoutingPage onViewProfile={handleViewPublicProfile} />;
       case "friends":
-        return <FriendsPage />;
+        return <FriendsPage onViewProfile={handleViewPublicProfile} />;
       case "mytools":
         return <MyToolsPage />;
       default:
@@ -195,6 +197,22 @@ export default function Dashboard() {
 
       {/* Bottom Navigation */}
       <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
+
+      {/* Public Profile Sheet */}
+      <Sheet open={showPublicProfile} onOpenChange={setShowPublicProfile}>
+        <SheetContent
+          side="right"
+          className="w-full p-0 sm:max-w-lg"
+          onClose={() => setShowPublicProfile(false)}
+        >
+          {publicProfileUserId && (
+            <PublicProfilePage
+              userId={publicProfileUserId}
+              onBack={() => setShowPublicProfile(false)}
+            />
+          )}
+        </SheetContent>
+      </Sheet>
     </View>
   );
 }
