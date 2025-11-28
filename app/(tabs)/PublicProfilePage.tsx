@@ -66,7 +66,7 @@ export default function PublicProfilePage({
       {/* Header */}
       <View className="border-b border-gray-800 bg-gray-800 px-4 py-3">
         <View className="flex-row items-center gap-1">
-          <Button type="ghost" onPress={onBack}>
+          <Button type="ghost" onPress={onBack} className="!px-0 !py-0">
             <ArrowLeft size={16} color="#fff" />
           </Button>
           <View>

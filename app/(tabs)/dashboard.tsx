@@ -1,11 +1,18 @@
+import CreateLeaseDialog from "@/components/marketplace/CreateLeaseDialog";
+import InquiryDialog from "@/components/marketplace/InquiryDialog";
+import LeaseDetailsDialog from "@/components/marketplace/LeaseDetailsDialog";
 import { BottomNav } from "@/components/ui/BottomNav";
+import { Button } from "@/components/ui/Button";
+import { Dialog } from "@/components/ui/Dialog";
 import { Sheet, SheetContent } from "@/components/ui/Sheet";
+import BiometricPrompt from "@/components/ui/biometric-prompt";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useAuth } from "@/hooks/use-auth";
 import { useBiometricAuth } from "@/hooks/use-biometric-auth";
 import { useQuery } from "convex/react";
 import { useRouter } from "expo-router";
+import { AlertTriangle, Phone } from "lucide-react-native";
 import { useState } from "react";
 import { ActivityIndicator, Platform, Text, View } from "react-native";
 import ProfileSetupPage from "./ProfileSetupPage";
@@ -69,6 +76,17 @@ export default function Dashboard() {
     lat: number;
     lng: number;
   } | null>(null);
+
+  const handleLeaseClick = (leaseId: Id<"landLeases">) => {
+    setSelectedLeaseId(leaseId);
+    setShowLeaseDetailsDialog(true);
+  };
+
+  const handleInquire = (leaseId: Id<"landLeases">) => {
+    setSelectedLeaseId(leaseId);
+    setShowLeaseDetailsDialog(false);
+    setShowInquiryDialog(true);
+  };
 
   const handleTabChange = (tab: string) => {
     console.log("[Dashboard] Tab changed to:", tab);
@@ -155,7 +173,13 @@ export default function Dashboard() {
       case "friends":
         return <FriendsPage onViewProfile={handleViewPublicProfile} />;
       case "mytools":
-        return <MyToolsPage />;
+        return (
+          <MyToolsPage
+            onEmergency={handleEmergency}
+            onNavigateToMarketplace={handleNavigateToMarketplace}
+            onNavigateToLeaseReview={handleNavigateToLeaseReview}
+          />
+        );
       default:
         return (
           <HQPage
@@ -197,6 +221,91 @@ export default function Dashboard() {
 
       {/* Bottom Navigation */}
       <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
+
+      {/* Emergency Dialog */}
+      <Dialog
+        visible={showEmergencyDialog}
+        onClose={() => setShowEmergencyDialog(false)}
+      >
+        <View className="gap-4">
+          <View className="gap-1">
+            <View className="flex-row items-center gap-2">
+              <AlertTriangle size={20} color="#ef4444" />
+              <Text className="text-xl font-bold text-red-500">
+                Emergency Services
+              </Text>
+            </View>
+            <Text className="text-sm text-gray-400">
+              Contact emergency services immediately if you need help.
+            </Text>
+          </View>
+          <View className="gap-3 py-4">
+            <Button
+              type="danger"
+              className="w-full"
+              onPress={() => handleEmergencyCall("911")}
+            >
+              <View className="flex-row items-center gap-3">
+                <Phone size={20} color="#ffffff" />
+                <Text className="text-lg text-white">Call 911</Text>
+              </View>
+            </Button>
+            <Button
+              type="outline"
+              className="w-full"
+              onPress={() => handleEmergencyCall("Local Ranger Station")}
+            >
+              <View className="flex-row items-center gap-3">
+                <Phone size={16} color="#ffffff" />
+                <Text className="text-white">Contact Local Ranger Station</Text>
+              </View>
+            </Button>
+            <Button
+              type="outline"
+              className="w-full"
+              onPress={() => handleEmergencyCall("Emergency Contact")}
+            >
+              <View className="flex-row items-center gap-3">
+                <Phone size={16} color="#ffffff" />
+                <Text className="text-white">Call Emergency Contact</Text>
+              </View>
+            </Button>
+          </View>
+          <View className="mt-4">
+            <Button type="ghost" onPress={() => setShowEmergencyDialog(false)}>
+              <Text className="text-white">Cancel</Text>
+            </Button>
+          </View>
+        </View>
+      </Dialog>
+
+      {/* Dialogs */}
+      <CreateLeaseDialog
+        open={showCreateLeaseDialog}
+        onOpenChange={setShowCreateLeaseDialog}
+      />
+
+      <LeaseDetailsDialog
+        leaseId={selectedLeaseId}
+        open={showLeaseDetailsDialog}
+        onOpenChange={setShowLeaseDetailsDialog}
+        onInquire={handleInquire}
+      />
+
+      <InquiryDialog
+        leaseId={selectedLeaseId}
+        open={showInquiryDialog}
+        onOpenChange={setShowInquiryDialog}
+      />
+
+      {/* Biometric Prompt */}
+      {user?._id && (
+        <BiometricPrompt
+          userId={user._id}
+          open={showBiometricPrompt}
+          onOpenChange={setShowBiometricPrompt}
+        />
+      )}
 
       {/* Public Profile Sheet */}
       <Sheet open={showPublicProfile} onOpenChange={setShowPublicProfile}>
