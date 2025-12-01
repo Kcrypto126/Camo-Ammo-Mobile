@@ -15,8 +15,8 @@ import { useMutation, useQuery } from "convex/react";
 import { formatDistanceToNow } from "date-fns";
 import * as ImagePicker from "expo-image-picker";
 import {
+  ArrowLeft,
   CheckCircle,
-  ChevronLeft,
   Image as ImageIcon,
   MapPin,
   MessageSquare,
@@ -32,6 +32,7 @@ import {
   ActivityIndicator,
   Image,
   KeyboardAvoidingView,
+  Linking,
   Platform,
   ScrollView,
   Text,
@@ -94,20 +95,24 @@ export default function DeerRecoveryPage({ onBack }: DeerRecoveryPageProps) {
     <View className="flex-1 bg-gray-900">
       {/* Header */}
       <View className="border-b border-gray-700 bg-gray-800 px-4 py-3">
-        <View className="flex-row items-center gap-3">
-          <Button type="ghost" onPress={onBack}>
-            <ChevronLeft size={20} color="#ffffff" />
-          </Button>
-          <View className="flex-1">
-            <Text className="text-lg font-bold text-white">Deer Recovery</Text>
-            <Text className="text-xs text-gray-400">
-              Need Help Recovering A Deer
-            </Text>
+        <View className="flex-row items-center justify-between">
+          <View className="flex-row items-center gap-2">
+            <Button type="ghost" onPress={onBack} className="!px-0 !py-0">
+              <ArrowLeft size={20} color="#ffffff" />
+            </Button>
+            <View className="flex-col">
+              <Text className="text-lg font-bold text-white">
+                Deer Recovery
+              </Text>
+              <Text className="text-xs text-gray-400">
+                Need Help Recovering A Deer
+              </Text>
+            </View>
           </View>
-          <Button onPress={() => setShowCreateDialog(true)}>
+          <Button type="primary" onPress={() => setShowCreateDialog(true)}>
             <View className="flex-row items-center gap-2">
-              <Plus size={16} color="#ffffff" />
-              <Text className="text-white">Request Help</Text>
+              <Plus size={16} color="#000" />
+              <Text className="text-[#000]">Request Help</Text>
             </View>
           </Button>
         </View>
@@ -146,8 +151,15 @@ export default function DeerRecoveryPage({ onBack }: DeerRecoveryPageProps) {
                   <Text className="mb-4 text-sm text-gray-400">
                     Need help recovering a deer? Create a request.
                   </Text>
-                  <Button onPress={() => setShowCreateDialog(true)}>
-                    <Text className="text-white">Request Help</Text>
+                  <Button
+                    type="primary"
+                    onPress={() => setShowCreateDialog(true)}
+                  >
+                    <View className="flex-row items-center gap-2">
+                      <Text className="text-[#fff] font-semibold">
+                        Request Help
+                      </Text>
+                    </View>
                   </Button>
                 </View>
               </CardContent>
@@ -158,7 +170,7 @@ export default function DeerRecoveryPage({ onBack }: DeerRecoveryPageProps) {
                 key={request._id}
                 onPress={() => setSelectedRequestId(request._id)}
               >
-                <CardHeader className="pb-3">
+                <CardHeader className="pb-0">
                   <View className="flex-row items-start justify-between gap-3">
                     <View className="flex-row items-start gap-3">
                       <Avatar
@@ -428,10 +440,10 @@ function CreateRequestDialog({
       return;
     }
 
-    if (!location) {
-      showToast("Please select a location on the map");
-      return;
-    }
+    // if (!location) {
+    //   showToast("Please select a location on the map");
+    //   return;
+    // }
 
     try {
       setUploading(true);
@@ -466,8 +478,8 @@ function CreateRequestDialog({
       await createRequest({
         notes: notes.trim(),
         phoneNumber: phoneNumber.trim(),
-        lat: location.lat,
-        lng: location.lng,
+        lat: location?.lat || 0,
+        lng: location?.lng || 0,
         locationName: locationName.trim() || undefined,
         shotPlacement: shotPlacement || undefined,
         yardsFromHit: yardsFromHit.trim() || undefined,
@@ -495,9 +507,9 @@ function CreateRequestDialog({
     <Dialog visible={open} onClose={onClose}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        className="max-h-[90vh]"
+        className="max-h-[70vh]"
       >
-        <ScrollView className="max-h-[90vh]">
+        <ScrollView className="max-h-[70vh] pr-0.5">
           <View className="gap-4">
             <View className="gap-1">
               <Text className="text-xl font-bold text-white">
@@ -509,7 +521,7 @@ function CreateRequestDialog({
             </View>
 
             {/* Name (auto-filled from profile) */}
-            <View className="gap-2">
+            <View>
               <Label>Your Name</Label>
               <Input
                 value={profile?.name || "Loading..."}
@@ -525,7 +537,7 @@ function CreateRequestDialog({
             </View>
 
             {/* Phone Number */}
-            <View className="gap-2">
+            <View>
               <Label>Phone Number *</Label>
               <Input
                 placeholder="(555) 123-4567"
@@ -536,18 +548,17 @@ function CreateRequestDialog({
             </View>
 
             {/* Notes */}
-            <View className="gap-2">
+            <View>
               <Label>What do you need help with? *</Label>
               <Textarea
                 placeholder="Describe the situation and what assistance you need..."
                 value={notes}
                 onChangeText={setNotes}
-                className="min-h-32"
               />
             </View>
 
             {/* Shot Placement */}
-            <View className="gap-2">
+            <View>
               <Label>Shot Placement</Label>
               <RadioGroup
                 value={shotPlacement}
@@ -575,7 +586,7 @@ function CreateRequestDialog({
             </View>
 
             {/* Yards From Hit */}
-            <View className="gap-2">
+            <View>
               <Label>How many yards walked from the hit site?</Label>
               <Input
                 placeholder="e.g., 50 yards"
@@ -586,9 +597,9 @@ function CreateRequestDialog({
             </View>
 
             {/* Photos */}
-            <View className="gap-2">
+            <View>
               <Label>Photos of Blood Trail</Label>
-              <View className="gap-2">
+              <View>
                 {selectedPhotos.length > 0 && (
                   <View className="flex-row flex-wrap gap-2">
                     {selectedPhotos.map((photo, index) => (
@@ -625,30 +636,28 @@ function CreateRequestDialog({
             </View>
 
             {/* Location Picker */}
-            <View className="gap-2">
+            <View>
               <Label>Drop a Pin for Location *</Label>
-              <Input
-                value={locationName}
-                onChangeText={setLocationName}
-                placeholder="Location name (optional)"
-              />
-              {location && (
-                <View className="h-64 overflow-hidden rounded-md border border-gray-700">
+              <Text>{location ? "true" : "false"}</Text>
+              {location ? (
+                <View className="h-48 overflow-hidden rounded-lg border border-gray-700">
                   <MapView
                     style={{ flex: 1, width: "100%", height: "100%" }}
                     initialRegion={mapRegion}
                     onPress={handleMapPress}
                     mapType="hybrid"
                   >
-                    {location && (
-                      <Marker
-                        coordinate={{
-                          latitude: location.lat,
-                          longitude: location.lng,
-                        }}
-                      />
-                    )}
+                    <Marker
+                      coordinate={{
+                        latitude: location.lat,
+                        longitude: location.lng,
+                      }}
+                    />
                   </MapView>
+                </View>
+              ) : (
+                <View className="flex h-48 items-center justify-center rounded-lg border border-gray-700 bg-gray-700">
+                  <Text className="text-sm text-gray-400">Loading map...</Text>
                 </View>
               )}
               <Text className="text-xs text-gray-400">
@@ -664,9 +673,10 @@ function CreateRequestDialog({
             className="flex-1"
             disabled={uploading}
           >
-            <Text className="text-white">Cancel</Text>
+            <Text className="text-white font-semibold">Cancel</Text>
           </Button>
           <Button
+            type="primary"
             onPress={handleSubmit}
             disabled={uploading}
             className="flex-1"
@@ -674,7 +684,7 @@ function CreateRequestDialog({
             {uploading ? (
               <ActivityIndicator color="#ffffff" />
             ) : (
-              <Text className="text-white">Request Help</Text>
+              <Text className="text-white font-semibold">Request Help</Text>
             )}
           </Button>
         </View>
@@ -776,22 +786,10 @@ function RequestDetailView({
     <View className="flex-1 bg-gray-900">
       {/* Header */}
       <View className="border-b border-gray-700 bg-gray-800 px-4 py-3">
-        <View className="flex-row items-center gap-3">
-          <Button type="ghost" onPress={onBack}>
-            <ChevronLeft size={20} color="#ffffff" />
+        <View className="flex-row items-center gap-3 justify-between">
+          <Button type="ghost" onPress={onBack} className="!px-0 !py-0">
+            <ArrowLeft size={20} color="#ffffff" />
           </Button>
-          <Avatar
-            size={40}
-            fallback={request.user?.name?.[0]?.toUpperCase() || "?"}
-          />
-          <View className="flex-1">
-            <Text className="font-semibold text-white">
-              {request.user?.name || "Unknown Hunter"}
-            </Text>
-            <Text className="text-xs text-gray-400">
-              {formatDistanceToNow(request.createdAt, { addSuffix: true })}
-            </Text>
-          </View>
           <View className="flex-row gap-2">
             {isOwner && !isClosed && (
               <Button onPress={handleClose} className="bg-green-500">
@@ -815,11 +813,26 @@ function RequestDetailView({
         <View className="gap-4">
           {/* Notes */}
           <Card>
-            <CardHeader>
-              <Text className="font-semibold text-white">Request Details</Text>
+            <CardHeader className="pb-0">
+              <View className="flex-row gap-3 items-center">
+                <Avatar
+                  size={40}
+                  fallback={request.user?.name?.[0]?.toUpperCase() || "?"}
+                />
+                <View className="flex-1">
+                  <Text className="font-semibold text-white">
+                    {request.user?.name || "Unknown Hunter"}
+                  </Text>
+                  <Text className="text-xs text-gray-400">
+                    {formatDistanceToNow(request.createdAt, {
+                      addSuffix: true,
+                    })}
+                  </Text>
+                </View>
+              </View>
             </CardHeader>
-            <CardContent className="gap-3">
-              <View className="flex-row flex-wrap gap-2 mb-3">
+            <CardContent>
+              <View className="flex-row flex-wrap gap-2 mb-2">
                 <Badge type={isClosed ? "secondary" : "default"}>
                   {isClosed ? "Closed" : "Active"}
                 </Badge>
@@ -831,28 +844,34 @@ function RequestDetailView({
                   </Badge>
                 )}
               </View>
-              <Text className="text-sm text-white">{request.notes}</Text>
-              <View className="flex-row flex-wrap gap-2">
-                <Badge type="default">
-                  <View className="flex-row items-center gap-1">
-                    <Phone size={12} color="#ffffff" />
-                    <Text className="text-white">{request.phoneNumber}</Text>
-                  </View>
-                </Badge>
-                {request.shotPlacement && (
-                  <Badge type="secondary">
-                    {request.shotPlacement === "quartered_away" &&
-                      "Shot: Quartered Away"}
-                    {request.shotPlacement === "quartering_to" &&
-                      "Shot: Quartering To"}
-                    {request.shotPlacement === "broadside" && "Shot: Broadside"}
-                  </Badge>
-                )}
-                {request.yardsFromHit && (
-                  <Badge type="secondary">
-                    Distance: {request.yardsFromHit} from hit
-                  </Badge>
-                )}
+              <Text className="text-sm text-white mb-2">{request.notes}</Text>
+              <View className="flex-col gap-2">
+                <TouchableOpacity
+                  onPress={() => Linking.openURL(`tel:${request.phoneNumber}`)}
+                  className="flex-row items-center gap-2"
+                >
+                  <Phone size={16} color="#9ca3af" />
+                  <Text className="text-sm text-[#ff6800] underline">
+                    {request.phoneNumber}
+                  </Text>
+                </TouchableOpacity>
+                <View className="flex-row flex-wrap gap-2">
+                  {request.shotPlacement && (
+                    <Badge type="secondary">
+                      {request.shotPlacement === "quartered_away" &&
+                        "Shot: Quartered Away"}
+                      {request.shotPlacement === "quartering_to" &&
+                        "Shot: Quartering To"}
+                      {request.shotPlacement === "broadside" &&
+                        "Shot: Broadside"}
+                    </Badge>
+                  )}
+                  {request.yardsFromHit && (
+                    <Badge type="secondary">
+                      Distance: {request.yardsFromHit} from hit
+                    </Badge>
+                  )}
+                </View>
               </View>
             </CardContent>
           </Card>
@@ -860,7 +879,7 @@ function RequestDetailView({
           {/* Photos */}
           {request.photos && request.photos.length > 0 && (
             <Card>
-              <CardHeader>
+              <CardHeader className="pb-0">
                 <Text className="font-semibold text-white">
                   Blood Trail Photos
                 </Text>
@@ -873,7 +892,7 @@ function RequestDetailView({
 
           {/* Location Map */}
           <Card>
-            <CardHeader>
+            <CardHeader className="pb-0">
               <Text className="font-semibold text-white">Location</Text>
               {request.locationName && (
                 <Text className="text-sm text-gray-400">
@@ -901,7 +920,7 @@ function RequestDetailView({
 
           {/* Comments */}
           <Card>
-            <CardHeader>
+            <CardHeader className="pb-0">
               <Text className="font-semibold text-white">
                 Comments ({request.comments.length})
               </Text>
@@ -956,6 +975,7 @@ function RequestDetailView({
             editable={!submitting}
           />
           <Button
+            type="primary"
             onPress={handleAddComment}
             disabled={submitting || !commentText.trim()}
           >

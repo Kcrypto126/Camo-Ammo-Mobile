@@ -20,6 +20,7 @@ import {
   MapPin,
   MessageSquare,
   Phone,
+  Plus,
   Send,
   Truck,
   Upload,
@@ -94,19 +95,27 @@ export default function VehicleRecoveryPage({
   return (
     <View className="flex-1 bg-gray-900">
       {/* Header */}
-      <View className="border-b border-gray-700 bg-gray-800 px-4 py-3">
-        <View className="flex-row items-center gap-1">
-          <Button type="ghost" onPress={onBack}>
-            <ArrowLeft size={16} color="#fff" />
-          </Button>
-          <View className="flex-1">
-            <Text className="text-lg font-bold text-white">
-              Vehicle Recovery
-            </Text>
-            <Text className="text-xs text-gray-400">
-              Get help from nearby hunters
-            </Text>
+      <View className="px-4 py-3 border-b border-gray-700 bg-gray-800">
+        <View className="flex-row items-center justify-between">
+          <View className="flex-row items-center gap-2">
+            <Button type="ghost" onPress={onBack} className="!px-0 !py-0">
+              <ArrowLeft size={16} color="#fff" />
+            </Button>
+            <View className="flex-col">
+              <Text className="text-lg font-bold text-white">
+                Vehicle Recovery
+              </Text>
+              <Text className="text-xs text-gray-400">
+                Get help from nearby hunters
+              </Text>
+            </View>
           </View>
+          <Button type="primary" onPress={() => setShowCreateDialog(true)}>
+            <View className="flex-row items-center gap-2">
+              <Plus size={16} color="#000" />
+              <Text className="">Request Help</Text>
+            </View>
+          </Button>
         </View>
       </View>
 
@@ -147,7 +156,9 @@ export default function VehicleRecoveryPage({
                     type="primary"
                     onPress={() => setShowCreateDialog(true)}
                   >
-                    <Text className="text-white">Request Help</Text>
+                    <Text className="text-white font-semibold">
+                      Request Help
+                    </Text>
                   </Button>
                 </View>
               </CardContent>
@@ -392,7 +403,7 @@ function RequestDetailView({
       {/* Header */}
       <View className="border-b border-gray-700 bg-gray-800 px-4 py-3">
         <View className="flex-row items-center justify-between">
-          <Button type="ghost" onPress={onBack}>
+          <Button type="ghost" onPress={onBack} className="!px-0 !py-0">
             <ArrowLeft size={20} color="#ffffff" />
           </Button>
           <View className="flex-row gap-2">
@@ -420,7 +431,7 @@ function RequestDetailView({
       >
         <View className="gap-4">
           <Card>
-            <CardHeader>
+            <CardHeader className="pb-0">
               <View className="mb-2 flex-row items-center gap-3">
                 <Avatar
                   size={40}
@@ -437,7 +448,7 @@ function RequestDetailView({
                   </Text>
                 </View>
               </View>
-              <Text className="text-xl font-bold text-white">
+              <Text className="text-xl mb-2 font-bold text-white">
                 {request.serviceNeeded}
               </Text>
               <View className="flex-row gap-2">
@@ -467,7 +478,7 @@ function RequestDetailView({
             </CardHeader>
             <CardContent>
               {request.description && (
-                <Text className="mb-4 whitespace-pre-wrap text-sm text-white">
+                <Text className="mb-2 whitespace-pre-wrap text-sm text-white">
                   {request.description}
                 </Text>
               )}
@@ -580,7 +591,11 @@ function RequestDetailView({
               onSubmitEditing={handleAddComment}
               className="flex-1"
             />
-            <Button type="primary" onPress={handleAddComment} disabled={!commentText.trim()}>
+            <Button
+              type="primary"
+              onPress={handleAddComment}
+              disabled={!commentText.trim()}
+            >
               <Send size={16} color="#ffffff" />
             </Button>
           </View>
@@ -719,10 +734,15 @@ function CreateRequestDialog({
   };
 
   const handleSubmit = async () => {
-    if (!serviceNeeded.trim() || !phoneNumber.trim() || !location) {
+    if (!serviceNeeded.trim() || !phoneNumber.trim()) {
       showToast("Please fill in all required fields and set your location");
       return;
     }
+
+    // if (!location) {
+    //   showToast("Please select a location on the map");
+    //   return;
+    // }
 
     try {
       setIsSubmitting(true);
@@ -887,7 +907,7 @@ function CreateRequestDialog({
             disabled={isSubmitting || isUploading}
             className="flex-1"
           >
-            <Text className="text-white">Cancel</Text>
+            <Text className="text-white font-semibold">Cancel</Text>
           </Button>
           <Button
             type="primary"
@@ -898,7 +918,7 @@ function CreateRequestDialog({
             {isSubmitting ? (
               <ActivityIndicator color="#ffffff" />
             ) : (
-              <Text className="text-white">Request Help</Text>
+              <Text className="text-white font-semibold">Request Help</Text>
             )}
           </Button>
         </View>
