@@ -1,6 +1,8 @@
 import CreateLeaseDialog from "@/components/marketplace/CreateLeaseDialog";
 import InquiryDialog from "@/components/marketplace/InquiryDialog";
 import LeaseDetailsDialog from "@/components/marketplace/LeaseDetailsDialog";
+import LeaseReviewPanel from "@/components/marketplace/LeaseReviewPanel";
+import MarketplacePanel from "@/components/marketplace/MarketplacePanel";
 import { BottomNav } from "@/components/ui/BottomNav";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
@@ -170,6 +172,12 @@ export default function Dashboard() {
         );
       case "scouting":
         return <ScoutingPage onViewProfile={handleViewPublicProfile} />;
+      case "marketplace":
+        return showLeaseReview ? (
+          <LeaseReviewPanel onLeaseClick={handleLeaseClick} />
+        ) : (
+          <MarketplacePanel onLeaseClick={handleLeaseClick} />
+        );
       case "friends":
         return <FriendsPage onViewProfile={handleViewPublicProfile} />;
       case "mytools":

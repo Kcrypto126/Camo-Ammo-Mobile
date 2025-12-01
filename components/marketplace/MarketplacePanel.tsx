@@ -77,20 +77,20 @@ export default function MarketplacePanel({
   return (
     <View className="flex-1 bg-gray-900">
       {/* Header with List Button */}
-      <View className="border-b border-gray-700 bg-gray-800 p-4">
+      <View className="border-b border-gray-700 bg-gray-800 px-4 py-3">
         <View className="flex-row items-center justify-between mb-4">
-          <Text className="text-xl font-semibold text-white">
-            Land Leasing Marketplace
+          <Text className="text-lg font-semibold text-white">
+            Land Leasing {"\n"}Marketplace
           </Text>
-          <Button onPress={() => setShowListForm(true)}>
+          <Button type="primary" onPress={() => setShowListForm(true)}>
             <View className="flex-row items-center gap-2">
-              <Plus size={16} color="#ffffff" />
-              <Text className="text-white">List A Property</Text>
+              <Plus size={16} color="#000" />
+              <Text className="text-[#000]">List A Property</Text>
             </View>
           </Button>
         </View>
-        <View className="flex-row flex-wrap gap-4">
-          <View className="flex-1 min-w-[150px] gap-2">
+        <View className="flex-row flex-wrap justify-between gap-4">
+          <View className="flex-1 min-w-[150px]">
             <Label>State</Label>
             <Select
               options={STATES}
@@ -102,7 +102,7 @@ export default function MarketplacePanel({
             />
           </View>
 
-          <View className="flex-1 min-w-[150px] gap-2">
+          <View className="flex-1 min-w-[150px]">
             <Label>Game Type</Label>
             <Select
               options={GAME_TYPES}
@@ -114,7 +114,7 @@ export default function MarketplacePanel({
             />
           </View>
 
-          <View className="flex-1 min-w-[150px] gap-2">
+          <View className="flex-1 min-w-[150px]">
             <Label>Lease Term</Label>
             <Select
               options={LEASE_TERMS}
@@ -126,7 +126,7 @@ export default function MarketplacePanel({
             />
           </View>
 
-          <View className="flex-1 min-w-[150px] gap-2">
+          <View className="flex-1 min-w-[150px]">
             <Label>Min Acreage</Label>
             <Input
               placeholder="Min acres"
@@ -136,7 +136,7 @@ export default function MarketplacePanel({
             />
           </View>
 
-          <View className="flex-1 min-w-[150px] gap-2">
+          <View className="flex-1 min-w-[150px]">
             <Label>Max Acreage</Label>
             <Input
               placeholder="Max acres"
@@ -146,7 +146,7 @@ export default function MarketplacePanel({
             />
           </View>
 
-          <View className="flex-1 min-w-[150px] gap-2">
+          <View className="flex-1 min-w-[150px]">
             <Label>Max Price/Year</Label>
             <Input
               placeholder="Max price"
@@ -159,7 +159,7 @@ export default function MarketplacePanel({
 
         <Button
           type="outline"
-          className="mt-4"
+          className="mt-6"
           onPress={() => {
             setState(undefined);
             setMinAcreage("");

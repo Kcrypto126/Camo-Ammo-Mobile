@@ -54,7 +54,7 @@ export default function MyToolsPage({
           <Button
             type="ghost"
             onPress={() => setCurrentView("menu")}
-            className="flex-row !justify-start items-center gap-2"
+            className="flex-row !justify-start items-center gap-2 !px-0 !py-0"
           >
             <ArrowLeft size={16} color="#fff" />
             <Text className="text-white">Back to My Tools</Text>
