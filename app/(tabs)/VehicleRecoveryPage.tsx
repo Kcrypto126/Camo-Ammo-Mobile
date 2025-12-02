@@ -57,19 +57,67 @@ export default function VehicleRecoveryPage({
 
   // Get user's location
   useEffect(() => {
-    if (typeof navigator !== "undefined" && navigator.geolocation) {
+    const defaultLocation = { lat: 39.0997, lng: -94.5786 };
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    let hasLoaded = false;
+
+    const loadWithDefaultLocation = () => {
+      if (hasLoaded) return;
+      hasLoaded = true;
+      if (timeoutId) clearTimeout(timeoutId);
+      setUserLocation(defaultLocation);
+    };
+
+    const handleGeolocationSuccess = (position: GeolocationPosition) => {
+      if (hasLoaded) return;
+      hasLoaded = true;
+      if (timeoutId) clearTimeout(timeoutId);
+      setUserLocation({
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+      });
+    };
+
+    const handleGeolocationError = (error: GeolocationPositionError) => {
+      console.error("[VehicleRecoveryPage] Geolocation error:", error.code, error.message);
+      loadWithDefaultLocation();
+    };
+
+    // Timeout fallback
+    timeoutId = setTimeout(() => {
+      if (!hasLoaded) {
+        loadWithDefaultLocation();
+      }
+    }, 8000);
+
+    // Try web navigator.geolocation
+    if (
+      Platform.OS === "web" &&
+      typeof navigator !== "undefined" &&
+      navigator.geolocation
+    ) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
-        },
-        (error) => {
-          console.error("Error getting location:", error);
-        }
+        handleGeolocationSuccess,
+        handleGeolocationError,
+        { enableHighAccuracy: true, timeout: 7000, maximumAge: 0 }
       );
     }
+    // Try global navigator for React Native
+    else if (global?.navigator?.geolocation) {
+      global.navigator.geolocation.getCurrentPosition(
+        handleGeolocationSuccess,
+        handleGeolocationError,
+        { enableHighAccuracy: true, timeout: 7000, maximumAge: 0 }
+      );
+    }
+    // Fallback if no geolocation available
+    else {
+      loadWithDefaultLocation();
+    }
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, []);
 
   const requests = useQuery(
@@ -739,10 +787,10 @@ function CreateRequestDialog({
       return;
     }
 
-    // if (!location) {
-    //   showToast("Please select a location on the map");
-    //   return;
-    // }
+    if (!location) {
+      showToast("Please select a location on the map");
+      return;
+    }
 
     try {
       setIsSubmitting(true);
