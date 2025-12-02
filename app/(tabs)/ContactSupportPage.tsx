@@ -100,8 +100,8 @@ export default function ContactSupportPage({
     <View className="flex-1 bg-gray-900">
       <View className="border-b border-gray-700 bg-gray-800 px-4 py-3">
         <View className="flex-row items-center justify-between">
-          <View className="flex-row items-center gap-3">
-            <Button type="ghost" onPress={onBack}>
+          <View className="flex-row items-center gap-2">
+            <Button type="ghost" onPress={onBack} className="!px-0 !py-0">
               <ArrowLeft size={16} color="#ffffff" />
             </Button>
             <View>
@@ -113,10 +113,10 @@ export default function ContactSupportPage({
               </Text>
             </View>
           </View>
-          <Button onPress={() => setShowNewTicketDialog(true)}>
+          <Button type="primary" onPress={() => setShowNewTicketDialog(true)}>
             <View className="flex-row items-center gap-2">
-              <Send size={16} color="#ffffff" />
-              <Text className="text-white">New Ticket</Text>
+              <Send size={16} color="#000" />
+              <Text className="text-[#000]">New Ticket</Text>
             </View>
           </Button>
         </View>
@@ -168,11 +168,11 @@ export default function ContactSupportPage({
                       No support tickets yet
                     </Text>
                     <Button
-                      type="outline"
+                      type="primary"
                       onPress={() => setShowNewTicketDialog(true)}
                       className="mt-4"
                     >
-                      <Text className="text-white">
+                      <Text className="text-white font-semibold">
                         Create your first ticket
                       </Text>
                     </Button>
@@ -256,8 +256,8 @@ export default function ContactSupportPage({
         visible={showNewTicketDialog}
         onClose={() => setShowNewTicketDialog(false)}
       >
-        <ScrollView className="max-h-[80vh]">
-          <View className="gap-4 py-4">
+        <ScrollView className="max-h-[70vh] pr-0.5">
+          <View className="gap-4">
             {/* Header */}
             <View className="gap-1">
               <Text className="text-xl font-bold text-white">
@@ -268,7 +268,7 @@ export default function ContactSupportPage({
               </Text>
             </View>
 
-            <View className="gap-2">
+            <View>
               <Label>Your Name</Label>
               <Input
                 value={profile?.name || "Loading..."}
@@ -282,7 +282,7 @@ export default function ContactSupportPage({
                 </Badge>
               )}
             </View>
-            <View className="gap-2">
+            <View>
               <Label>Category *</Label>
               <Select
                 options={categoryOptions}
@@ -296,7 +296,7 @@ export default function ContactSupportPage({
                 placeholder="Select a category"
               />
             </View>
-            <View className="gap-2">
+            <View>
               <Label>Subject *</Label>
               <Input
                 placeholder="Brief description of your issue"
@@ -304,27 +304,26 @@ export default function ContactSupportPage({
                 onChangeText={setSubject}
               />
             </View>
-            <View className="gap-2">
+            <View>
               <Label>Message *</Label>
               <Textarea
                 placeholder="Please provide detailed information about your issue..."
                 value={message}
                 onChangeText={setMessage}
-                className="min-h-32"
               />
             </View>
           </View>
         </ScrollView>
-        <View className="flex-row gap-3 mt-4">
+        <View className="flex-row gap-3 mt-6">
           <Button
             type="outline"
             onPress={() => setShowNewTicketDialog(false)}
             className="flex-1"
           >
-            <Text className="text-white">Cancel</Text>
+            <Text className="text-white font-semibold">Cancel</Text>
           </Button>
-          <Button onPress={handleSubmit} className="flex-1">
-            <Text className="text-white">Submit Ticket</Text>
+          <Button type="primary" onPress={handleSubmit} className="flex-1">
+            <Text className="text-white font-semibold">Submit Ticket</Text>
           </Button>
         </View>
       </Dialog>

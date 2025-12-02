@@ -317,14 +317,14 @@ export default function ProfilePage() {
       <View className="mt-6 gap-4 px-4">
         {/* Personal Information */}
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-0">
             <View className="flex-row items-center gap-2">
               <UserCircle size={20} color="#ffffff" />
               <CardTitle>Personal Information</CardTitle>
             </View>
           </CardHeader>
           <CardContent className="gap-4">
-            <View className="gap-2">
+            <View>
               <Label>Full Name</Label>
               <Input
                 placeholder="John Smith"
@@ -337,7 +337,7 @@ export default function ProfilePage() {
 
         {/* Address */}
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-0">
             <View className="flex-row items-center gap-2">
               <MapPin size={20} color="#ffffff" />
               <CardTitle>Address</CardTitle>
@@ -345,7 +345,7 @@ export default function ProfilePage() {
             <CardDescription>Enter your address information</CardDescription>
           </CardHeader>
           <CardContent className="gap-4">
-            <View className="gap-2">
+            <View>
               <Label>Country</Label>
               <Select
                 options={COUNTRIES}
@@ -354,7 +354,7 @@ export default function ProfilePage() {
                 placeholder="Select country"
               />
             </View>
-            <View className="gap-2">
+            <View>
               <Label>Street Address</Label>
               <Input
                 placeholder="123 Main Street"
@@ -363,7 +363,7 @@ export default function ProfilePage() {
               />
             </View>
             <View className="flex-row gap-4">
-              <View className="flex-1 gap-2">
+              <View className="flex-1">
                 <Label>City</Label>
                 <Input
                   placeholder="Springfield"
@@ -371,7 +371,7 @@ export default function ProfilePage() {
                   onChangeText={setCity}
                 />
               </View>
-              <View className="flex-1 gap-2">
+              <View className="flex-1">
                 <Label>State</Label>
                 <Select
                   options={US_STATES}
@@ -381,7 +381,7 @@ export default function ProfilePage() {
                 />
               </View>
             </View>
-            <View className="gap-2">
+            <View>
               <Label>Zip Code</Label>
               <Input
                 placeholder="65801"
@@ -395,7 +395,7 @@ export default function ProfilePage() {
 
         {/* Emergency Contacts */}
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-0">
             <View className="flex-row items-center gap-2">
               <AlertCircle size={20} color="#ffffff" />
               <CardTitle>Emergency Contacts</CardTitle>
@@ -406,7 +406,7 @@ export default function ProfilePage() {
           </CardHeader>
           <CardContent className="gap-4">
             {/* Contact 1 */}
-            <View className="gap-2">
+            <View>
               <TouchableOpacity
                 onPress={() => setContact1Open(!contact1Open)}
                 className="flex-row items-center justify-between rounded-lg border border-gray-700 bg-gray-800 p-3"
@@ -420,7 +420,7 @@ export default function ProfilePage() {
               </TouchableOpacity>
               {contact1Open && (
                 <View className="mt-2 gap-4 pl-2">
-                  <View className="gap-2">
+                  <View>
                     <Label>Name</Label>
                     <Input
                       placeholder="Jane Smith"
@@ -433,7 +433,7 @@ export default function ProfilePage() {
                       }
                     />
                   </View>
-                  <View className="gap-2">
+                  <View>
                     <Label>Phone</Label>
                     <Input
                       placeholder="555-123-4567"
@@ -447,7 +447,7 @@ export default function ProfilePage() {
                       keyboardType="phone-pad"
                     />
                   </View>
-                  <View className="gap-2">
+                  <View>
                     <Label>Relationship</Label>
                     <Input
                       placeholder="Spouse"
@@ -586,7 +586,7 @@ export default function ProfilePage() {
 
         {/* Hunting Preferences */}
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-0">
             <View className="flex-row items-center gap-2">
               <Target size={20} color="#ffffff" />
               <CardTitle>What do you like to hunt?</CardTitle>
@@ -612,7 +612,7 @@ export default function ProfilePage() {
 
         {/* Weapon Types */}
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-0">
             <View className="flex-row items-center gap-2">
               <Crosshair size={20} color="#ffffff" />
               <CardTitle>Weapon Types</CardTitle>
@@ -638,7 +638,7 @@ export default function ProfilePage() {
 
         {/* Special Events */}
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-0">
             <View className="flex-row items-center gap-2">
               <Calendar size={20} color="#ffffff" />
               <CardTitle>Special Hunting Events</CardTitle>
@@ -659,13 +659,18 @@ export default function ProfilePage() {
         </Card>
 
         {/* Save Button */}
-        <Button onPress={onSubmit} disabled={isSaving} className="w-full">
+        <Button
+          type="primary"
+          onPress={onSubmit}
+          disabled={isSaving}
+          className="w-full"
+        >
           {isSaving ? (
             <ActivityIndicator color="#ffffff" />
           ) : (
             <View className="flex-row items-center gap-2">
               <Save size={16} color="#ffffff" />
-              <Text className="text-white">Save Profile</Text>
+              <Text className="text-white font-semibold">Save Profile</Text>
             </View>
           )}
         </Button>
@@ -725,7 +730,7 @@ export default function ProfilePage() {
         <Button type="outline" onPress={() => signOut()} className="w-full">
           <View className="flex-row items-center gap-3">
             <LogOut size={16} color="#ef4444" />
-            <Text className="text-red-500">Sign Out</Text>
+            <Text className="text-red-500 font-semibold">Sign Out</Text>
           </View>
         </Button>
       </View>

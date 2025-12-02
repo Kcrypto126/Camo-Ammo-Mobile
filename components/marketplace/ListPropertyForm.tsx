@@ -258,8 +258,8 @@ export default function ListPropertyForm({ onBack }: ListPropertyFormProps) {
     <View className="flex-1 bg-gray-900">
       {/* Header */}
       <View className="border-b border-gray-700 bg-gray-800 px-4 py-3">
-        <View className="flex-row items-center gap-3">
-          <Button type="ghost" onPress={handleBack}>
+        <View className="flex-row items-center gap-2">
+          <Button type="ghost" onPress={handleBack} className="!px-0 !py-0">
             <ArrowLeft size={16} color="#ffffff" />
           </Button>
           <View>
@@ -323,12 +323,12 @@ export default function ListPropertyForm({ onBack }: ListPropertyFormProps) {
         {/* Step 1: Location */}
         {step === 1 && (
           <Card>
-            <CardHeader>
+            <CardHeader className="pb-0">
               <CardTitle>Property Location</CardTitle>
               <CardDescription>Where is your property located?</CardDescription>
             </CardHeader>
             <CardContent className="gap-4">
-              <View className="gap-2">
+              <View>
                 <Label>Country *</Label>
                 <Select
                   options={COUNTRIES}
@@ -337,7 +337,7 @@ export default function ListPropertyForm({ onBack }: ListPropertyFormProps) {
                 />
               </View>
 
-              <View className="gap-2">
+              <View>
                 <Label>Region (Optional)</Label>
                 <Input
                   placeholder="e.g., Midwest, Southwest"
@@ -346,7 +346,7 @@ export default function ListPropertyForm({ onBack }: ListPropertyFormProps) {
                 />
               </View>
 
-              <View className="gap-2">
+              <View>
                 <Label>Street Address *</Label>
                 <Input
                   placeholder="Enter street address"
@@ -358,7 +358,7 @@ export default function ListPropertyForm({ onBack }: ListPropertyFormProps) {
                 </Text>
               </View>
 
-              <View className="gap-2">
+              <View>
                 <Label>Street Address Continued (Optional)</Label>
                 <Input
                   placeholder="Apt, Suite, Unit, Building, Floor, etc."
@@ -368,7 +368,7 @@ export default function ListPropertyForm({ onBack }: ListPropertyFormProps) {
               </View>
 
               <View className="flex-row gap-4">
-                <View className="flex-1 gap-2">
+                <View className="flex-1">
                   <Label>City *</Label>
                   <Input
                     placeholder="City"
@@ -377,7 +377,7 @@ export default function ListPropertyForm({ onBack }: ListPropertyFormProps) {
                   />
                 </View>
 
-                <View className="flex-1 gap-2">
+                <View className="flex-1">
                   <Label>State *</Label>
                   <Select
                     options={US_STATES}
@@ -389,7 +389,7 @@ export default function ListPropertyForm({ onBack }: ListPropertyFormProps) {
               </View>
 
               <View className="flex-row gap-4">
-                <View className="flex-1 gap-2">
+                <View className="flex-1">
                   <Label>County *</Label>
                   <Input
                     placeholder="County"
@@ -398,7 +398,7 @@ export default function ListPropertyForm({ onBack }: ListPropertyFormProps) {
                   />
                 </View>
 
-                <View className="flex-1 gap-2">
+                <View className="flex-1">
                   <Label>Zip Code *</Label>
                   <Input
                     placeholder="Zip Code"
@@ -410,7 +410,7 @@ export default function ListPropertyForm({ onBack }: ListPropertyFormProps) {
               </View>
 
               <View className="flex-row gap-4">
-                <View className="flex-1 gap-2">
+                <View className="flex-1">
                   <Label>Latitude *</Label>
                   <Input
                     placeholder="e.g., 38.9517"
@@ -420,7 +420,7 @@ export default function ListPropertyForm({ onBack }: ListPropertyFormProps) {
                   />
                 </View>
 
-                <View className="flex-1 gap-2">
+                <View className="flex-1">
                   <Label>Longitude *</Label>
                   <Input
                     placeholder="e.g., -92.3341"
@@ -431,9 +431,9 @@ export default function ListPropertyForm({ onBack }: ListPropertyFormProps) {
                 </View>
               </View>
 
-              <Button onPress={handleNext} className="w-full">
+              <Button type="primary" onPress={handleNext} className="w-full">
                 <View className="flex-row items-center gap-2">
-                  <Text className="text-white">Next</Text>
+                  <Text className="text-white font-semibold">Next</Text>
                   <ChevronRight size={16} color="#ffffff" />
                 </View>
               </Button>
@@ -444,12 +444,12 @@ export default function ListPropertyForm({ onBack }: ListPropertyFormProps) {
         {/* Step 2: Property Details */}
         {step === 2 && (
           <Card>
-            <CardHeader>
+            <CardHeader className="pb-0">
               <CardTitle>Property Details</CardTitle>
               <CardDescription>Tell us about your property</CardDescription>
             </CardHeader>
-            <CardContent className="gap-6">
-              <View className="gap-2">
+            <CardContent className="gap-4">
+              <View>
                 <Label>How Many Acres? *</Label>
                 <Input
                   placeholder="e.g., 40"
@@ -459,7 +459,7 @@ export default function ListPropertyForm({ onBack }: ListPropertyFormProps) {
                 />
               </View>
 
-              <View className="gap-3">
+              <View className="gap-2">
                 <Label>Land Types *</Label>
                 <View className="flex-row flex-wrap gap-3">
                   {LAND_TYPES.map((type) => (
@@ -485,9 +485,9 @@ export default function ListPropertyForm({ onBack }: ListPropertyFormProps) {
                 </View>
               </View>
 
-              <View className="gap-3">
+              <View className="gap-2">
                 <Label>Available Hunting *</Label>
-                <View className="gap-3">
+                <View className="gap-2">
                   {HUNTING_TYPES.map((type) => (
                     <View key={type.id} className="flex-row items-center gap-2">
                       <Checkbox
@@ -508,7 +508,7 @@ export default function ListPropertyForm({ onBack }: ListPropertyFormProps) {
                 </View>
               </View>
 
-              <View className="gap-2">
+              <View>
                 <Label>Hunting Party Size Allowed *</Label>
                 <Input
                   placeholder="e.g., 4"
@@ -521,9 +521,9 @@ export default function ListPropertyForm({ onBack }: ListPropertyFormProps) {
                 </Text>
               </View>
 
-              <Button onPress={handleNext} className="w-full">
+              <Button type="primary" onPress={handleNext} className="w-full">
                 <View className="flex-row items-center gap-2">
-                  <Text className="text-white">Next</Text>
+                  <Text className="text-white font-semibold">Next</Text>
                   <ChevronRight size={16} color="#ffffff" />
                 </View>
               </Button>
@@ -534,12 +534,12 @@ export default function ListPropertyForm({ onBack }: ListPropertyFormProps) {
         {/* Step 3: Amenities & Description */}
         {step === 3 && (
           <Card>
-            <CardHeader>
+            <CardHeader className="pb-0">
               <CardTitle>Amenities & Description</CardTitle>
               <CardDescription>What does your property offer?</CardDescription>
             </CardHeader>
-            <CardContent className="gap-6">
-              <View className="gap-3">
+            <CardContent className="gap-4">
+              <View className="gap-2">
                 <Label>Available Amenities</Label>
                 <View className="flex-row flex-wrap gap-3">
                   {AMENITIES.map((amenity) => (
@@ -565,13 +565,12 @@ export default function ListPropertyForm({ onBack }: ListPropertyFormProps) {
                 </View>
               </View>
 
-              <View className="gap-2">
+              <View>
                 <Label>Description of the Property *</Label>
                 <Textarea
                   placeholder="Describe your property to hunters..."
                   value={description}
                   onChangeText={setDescription}
-                  className="min-h-32"
                 />
                 <Text className="text-xs text-gray-400">
                   Include details about terrain, wildlife, access, and what
@@ -579,9 +578,9 @@ export default function ListPropertyForm({ onBack }: ListPropertyFormProps) {
                 </Text>
               </View>
 
-              <Button onPress={handleNext} className="w-full">
+              <Button type="primary" onPress={handleNext} className="w-full">
                 <View className="flex-row items-center gap-2">
-                  <Text className="text-white">Next</Text>
+                  <Text className="text-white font-semibold">Next</Text>
                   <ChevronRight size={16} color="#ffffff" />
                 </View>
               </Button>
@@ -592,12 +591,12 @@ export default function ListPropertyForm({ onBack }: ListPropertyFormProps) {
         {/* Step 4: Pricing */}
         {step === 4 && (
           <Card>
-            <CardHeader>
+            <CardHeader className="pb-0">
               <CardTitle>Pricing</CardTitle>
               <CardDescription>Set your lease price</CardDescription>
             </CardHeader>
-            <CardContent className="gap-6">
-              <View className="gap-2">
+            <CardContent className="gap-4">
+              <View>
                 <Label>Price *</Label>
                 <Input
                   placeholder="e.g., 2500"
@@ -607,7 +606,7 @@ export default function ListPropertyForm({ onBack }: ListPropertyFormProps) {
                 />
               </View>
 
-              <View className="gap-2">
+              <View>
                 <Label>Price Type *</Label>
                 <Select
                   options={PRICE_TYPES.map((t) => t.label)}
@@ -633,14 +632,19 @@ export default function ListPropertyForm({ onBack }: ListPropertyFormProps) {
               </View>
 
               <Button
+                type="primary"
                 onPress={handleSubmit}
                 className="w-full"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
-                  <Text className="text-white">Submitting...</Text>
+                  <Text className="text-white font-semibold">
+                    Submitting...
+                  </Text>
                 ) : (
-                  <Text className="text-white">Submit Listing</Text>
+                  <Text className="text-white font-semibold">
+                    Submit Listing
+                  </Text>
                 )}
               </Button>
 

@@ -14,7 +14,9 @@ import type { Id } from "@/convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { formatDistanceToNow } from "date-fns";
 import {
+  ArrowLeft,
   ChevronLeft,
+  Eraser,
   Flag,
   Heart,
   MessageSquare,
@@ -149,9 +151,9 @@ export default function ForumsPage({ onBack }: ForumsPageProps) {
     <View className="flex-1 bg-gray-900">
       {/* Header */}
       <View className="border-b border-gray-700 bg-gray-800 px-4 py-3">
-        <View className="flex-row items-center gap-3">
-          <Button type="ghost" onPress={onBack}>
-            <ChevronLeft size={20} color="#ffffff" />
+        <View className="flex-row items-center gap-2">
+          <Button type="ghost" onPress={onBack} className="!px-0 !py-0">
+            <ArrowLeft size={20} color="#ffffff" />
           </Button>
           <View className="flex-1">
             <Text className="text-lg font-bold text-white">Forums</Text>
@@ -160,12 +162,13 @@ export default function ForumsPage({ onBack }: ForumsPageProps) {
             </Text>
           </View>
           <Button
+            type="primary"
             onPress={() => setShowCreateDialog(true)}
             disabled={banStatus?.isBanned}
           >
             <View className="flex-row items-center gap-2">
-              <Plus size={16} color="#ffffff" />
-              <Text className="text-white">New Post</Text>
+              <Plus size={16} color="#000" />
+              <Text className="text-[#000]">New Post</Text>
             </View>
           </Button>
         </View>
@@ -193,38 +196,38 @@ export default function ForumsPage({ onBack }: ForumsPageProps) {
 
       {/* Location Filter */}
       <View className="border-b border-gray-700 bg-gray-800 px-4 py-3">
-        <View className="gap-3">
-          <View className="flex-row items-center gap-2">
-            <Select
-              options={["All States", ...US_STATES]}
-              value={selectedState || "All States"}
-              onChange={(value) => {
-                setSelectedState(value === "All States" ? undefined : value);
+        <View className="flex-row items-center justify-between gap-2">
+          <Select
+            options={["All States", ...US_STATES]}
+            value={selectedState || "All States"}
+            onChange={(value) => {
+              setSelectedState(value === "All States" ? undefined : value);
+              setSelectedCity(undefined);
+            }}
+            placeholder="All States"
+            className="flex-row"
+          />
+
+          <Input
+            placeholder="Filter by city..."
+            value={selectedCity || ""}
+            onChangeText={(text) => setSelectedCity(text || undefined)}
+            className="flex-1"
+          />
+
+          {(selectedState || selectedCity) && (
+            <Button
+              type="outline"
+              onPress={() => {
+                setSelectedState(undefined);
                 setSelectedCity(undefined);
               }}
-              placeholder="All States"
-              className="w-[180px]"
-            />
-
-            <Input
-              placeholder="Filter by city..."
-              value={selectedCity || ""}
-              onChangeText={(text) => setSelectedCity(text || undefined)}
-              className="w-[180px]"
-            />
-
-            {(selectedState || selectedCity) && (
-              <Button
-                type="ghost"
-                onPress={() => {
-                  setSelectedState(undefined);
-                  setSelectedCity(undefined);
-                }}
-              >
-                <Text className="text-white">Clear</Text>
-              </Button>
-            )}
-          </View>
+              className="w-[40px]"
+            >
+              {/* <Text className="text-white">Clear</Text> */}
+              <Eraser size={20} color="#fff" />
+            </Button>
+          )}
         </View>
       </View>
 
@@ -233,19 +236,21 @@ export default function ForumsPage({ onBack }: ForumsPageProps) {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          className="flex-row gap-2"
+          className="flex-row"
         >
           <Button
             type={selectedCategory === undefined ? "primary" : "outline"}
             onPress={() => setSelectedCategory(undefined)}
+            className="mr-2"
           >
             <Text className="text-white">All</Text>
           </Button>
-          {CATEGORIES.map((cat) => (
+          {CATEGORIES.map((cat, index) => (
             <Button
               key={cat.value}
               type={selectedCategory === cat.value ? "primary" : "outline"}
               onPress={() => setSelectedCategory(cat.value)}
+              className={`${index + 1 == CATEGORIES.length ? "" : "mr-2"}`}
             >
               <Text className="text-white">{cat.label}</Text>
             </Button>
@@ -286,8 +291,13 @@ export default function ForumsPage({ onBack }: ForumsPageProps) {
                   <Text className="mb-4 text-sm text-gray-400">
                     Be the first to start a conversation!
                   </Text>
-                  <Button onPress={() => setShowCreateDialog(true)}>
-                    <Text className="text-white">Create Post</Text>
+                  <Button
+                    type="primary"
+                    onPress={() => setShowCreateDialog(true)}
+                  >
+                    <Text className="text-white font-semibold">
+                      Create Post
+                    </Text>
                   </Button>
                 </View>
               </CardContent>
@@ -771,83 +781,88 @@ function CreatePostDialog({
 
   return (
     <Dialog visible={open} onClose={() => onOpenChange(false)}>
-      <ScrollView className="max-h-[90vh]">
-        <View className="gap-4">
-          <View className="gap-1">
-            <Text className="text-xl font-bold text-white">
-              Create New Post
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className="max-h-[70vh]"
+      >
+        <ScrollView className="max-h-[70vh] pr-0.5">
+          <View className="gap-4">
+            <View className="gap-1">
+              <Text className="text-xl font-bold text-white">
+                Create New Post
+              </Text>
+              <Text className="text-sm text-gray-400">
+                Share your thoughts with the hunting community
+              </Text>
+            </View>
+            <View>
+              <Label>Title *</Label>
+              <Input
+                placeholder="What's on your mind?"
+                value={title}
+                onChangeText={setTitle}
+              />
+            </View>
+            <View>
+              <Label>Category</Label>
+              <Select
+                options={categoryOptions}
+                value={category ? categoryLabelMap[category] : undefined}
+                onChange={(value) => {
+                  const key = categoryValueMap[value];
+                  if (key) setCategory(key);
+                }}
+                placeholder="Select a category"
+              />
+            </View>
+            <View>
+              <Label>State *</Label>
+              <Select
+                options={US_STATES}
+                value={state}
+                onChange={setState}
+                placeholder="Select a state"
+              />
+            </View>
+            <View>
+              <Label>City *</Label>
+              <Input
+                placeholder="Enter city name"
+                value={city}
+                onChangeText={setCity}
+              />
+            </View>
+            <View>
+              <Label>Content *</Label>
+              <Textarea
+                placeholder="Share your story, tips, or questions..."
+                value={content}
+                onChangeText={setContent}
+              />
+            </View>
+          </View>
+        </ScrollView>
+        <View className="flex-row gap-3 mt-4">
+          <Button
+            type="outline"
+            onPress={() => onOpenChange(false)}
+            disabled={isSubmitting}
+            className="flex-1"
+          >
+            <Text className="text-white font-semibold">Cancel</Text>
+          </Button>
+          <Button
+            type="primary"
+            onPress={handleSubmit}
+            disabled={isSubmitting}
+            className="flex-1"
+          >
+            <Text className="text-white font-semibold">
+              {isSubmitting ? "Creating..." : "Create Post"}
             </Text>
-            <Text className="text-sm text-gray-400">
-              Share your thoughts with the hunting community
-            </Text>
-          </View>
-          <View className="gap-2">
-            <Label>Title *</Label>
-            <Input
-              placeholder="What's on your mind?"
-              value={title}
-              onChangeText={setTitle}
-            />
-          </View>
-          <View className="gap-2">
-            <Label>Category</Label>
-            <Select
-              options={categoryOptions}
-              value={category ? categoryLabelMap[category] : undefined}
-              onChange={(value) => {
-                const key = categoryValueMap[value];
-                if (key) setCategory(key);
-              }}
-              placeholder="Select a category"
-            />
-          </View>
-          <View className="gap-2">
-            <Label>State *</Label>
-            <Select
-              options={US_STATES}
-              value={state}
-              onChange={setState}
-              placeholder="Select a state"
-            />
-          </View>
-          <View className="gap-2">
-            <Label>City *</Label>
-            <Input
-              placeholder="Enter city name"
-              value={city}
-              onChangeText={setCity}
-            />
-          </View>
-          <View className="gap-2">
-            <Label>Content *</Label>
-            <Textarea
-              placeholder="Share your story, tips, or questions..."
-              value={content}
-              onChangeText={setContent}
-              className="min-h-32"
-            />
-          </View>
+          </Button>
         </View>
-      </ScrollView>
-      <View className="flex-row gap-3 mt-4">
-        <Button
-          type="outline"
-          onPress={() => onOpenChange(false)}
-          disabled={isSubmitting}
-          className="flex-1"
-        >
-          <Text className="text-white">Cancel</Text>
-        </Button>
-        <Button
-          onPress={handleSubmit}
-          disabled={isSubmitting}
-          className="flex-1"
-        >
-          <Text className="text-white">
-            {isSubmitting ? "Creating..." : "Create Post"}
-          </Text>
-        </Button>
-      </View>
+      </KeyboardAvoidingView>
     </Dialog>
   );
 }
