@@ -167,8 +167,6 @@ export default function MyHuntPage({
     isAdmin ? { status: "open" } : "skip"
   );
 
-  console.log("[HQ] userRole:", userRole);
-
   const startHunt = useMutation(api.hunts.startHunt);
   const endHunt = useMutation(api.hunts.endHunt);
   const getCurrentWeather = useAction(api.weather.getCurrentWeather);
@@ -445,7 +443,7 @@ export default function MyHuntPage({
     <View className="h-full bg-gray-900 flex-1">
       <ScrollView
         className="flex-1"
-        contentContainerStyle={{ paddingBottom: 64 }}
+        contentContainerStyle={{ paddingBottom: 24 }}
       >
         {/* Location Header */}
         <View className="border-b border-gray-700 bg-gray-800 px-4 py-3">
@@ -1085,21 +1083,27 @@ export default function MyHuntPage({
                         {hunt.status === "completed" && (
                           <Badge
                             type={hunt.successful ? "success" : "secondary"}
+                            className="px-2 py-0.5"
                           >
-                            {hunt.successful ? (
-                              <CheckCircle2
-                                size={12}
-                                color="#22C55E"
-                                style={tw`mr-1`}
-                              />
-                            ) : (
-                              <XCircle
-                                size={12}
-                                color="#EF4444"
-                                style={tw`mr-1`}
-                              />
-                            )}
-                            {hunt.successful ? "Success" : "No Harvest"}
+                            <View className="flex-row items-center gap-1">
+                              {hunt.successful ? (
+                                <CheckCircle2
+                                  size={12}
+                                  color="#22C55E"
+                                />
+                              ) : (
+                                <XCircle
+                                  size={12}
+                                  color="#EF4444"
+                                />
+                              )}
+                              <Text
+                                className={hunt.successful ? "text-green-700 text-xs font-semibold" : "text-amber-700 text-xs font-semibold"}
+                                style={{ marginTop: 1 }}
+                              >
+                                {hunt.successful ? "Success" : "No Harvest"}
+                              </Text>
+                            </View>
                           </Badge>
                         )}
                       </View>

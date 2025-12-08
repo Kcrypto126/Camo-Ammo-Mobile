@@ -14,16 +14,51 @@ import { useAuth } from "@/hooks/use-auth";
 import { useBiometricAuth } from "@/hooks/use-biometric-auth";
 import { useQuery } from "convex/react";
 import { useRouter } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 import { AlertTriangle, Phone } from "lucide-react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ActivityIndicator, Platform, Text, View } from "react-native";
+import AdministratorsPage from "./AdministratorsPage";
+import ArchivedMembersPage from "./ArchivedMembersPage";
+import AuditTrailPage from "./AuditTrailPage";
+import BansPage from "./BansPage";
+import ManagePage from "./ManagePage";
+import MemberManagementPage from "./MemberManagementPage";
+import OpenTicketsListPage from "./OpenTicketsListPage";
 import ProfileSetupPage from "./ProfileSetupPage";
 import PublicProfilePage from "./PublicProfilePage";
+import RolePermissionsPage from "./RolePermissionsPage";
+import SubscriptionsPage from "./SubscriptionsPage";
+import ViewMemberProfilePage from "./ViewMemberProfilePage";
 import FriendsPage from "./friends";
 import HQPage from "./hq";
 import HuntingMap from "./map";
 import MyToolsPage from "./mytools";
 import ScoutingPage from "./scouting";
+
+// Storage helper that uses SecureStore on React Native and localStorage on web
+const storage = {
+  getItem: async (key: string): Promise<string | null> => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      return window.localStorage.getItem(key);
+    }
+    return await SecureStore.getItemAsync(key);
+  },
+  setItem: async (key: string, value: string): Promise<void> => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      window.localStorage.setItem(key, value);
+    } else {
+      await SecureStore.setItemAsync(key, value);
+    }
+  },
+  removeItem: async (key: string): Promise<void> => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      window.localStorage.removeItem(key);
+    } else {
+      await SecureStore.deleteItemAsync(key);
+    }
+  },
+};
 
 const showToast = (msg: string) => {
   if (Platform.OS === "android") {
@@ -78,6 +113,19 @@ export default function Dashboard() {
     lat: number;
     lng: number;
   } | null>(null);
+
+  // Show biometric prompt on first sign-in
+  useEffect(() => {
+    const hasShownPrompt = storage.getItem("biometric_prompt_shown");
+    if (isAvailable && !isEnabled && !hasShownPrompt && user?._id) {
+      // Delay showing the prompt slightly so user sees the app first
+      const timer = setTimeout(() => {
+        setShowBiometricPrompt(true);
+        storage.setItem("biometric_prompt_shown", "true");
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [isAvailable, isEnabled, user]);
 
   const handleLeaseClick = (leaseId: Id<"landLeases">) => {
     setSelectedLeaseId(leaseId);
@@ -147,7 +195,54 @@ export default function Dashboard() {
     setShowReportedPostsList(true);
   };
 
+  const handleViewTicket = async (
+    userId: Id<"users">,
+    ticketId: Id<"supportTickets">
+  ) => {
+    setShowOpenTicketsList(false);
+    await storage.setItem("previousMembersView", "members");
+    await storage.setItem("expandedTicketId", ticketId);
+    setSelectedUserId(userId);
+    setMembersView("view_profile");
+  };
+
   const renderContent = () => {
+    if (showOpenTicketsList) {
+      return (
+        <OpenTicketsListPage
+          onBack={() => setShowOpenTicketsList(false)}
+          onViewTicket={handleViewTicket}
+        />
+      );
+    }
+
+    // if (showPendingPostsList) {
+    //   return (
+    //     <PendingPostsListPage onBack={() => setShowPendingPostsList(false)} />
+    //   );
+    // }
+
+    // if (showReportedPostsList) {
+    //   return (
+    //     <ReportedPostsListPage onBack={() => setShowReportedPostsList(false)} />
+    //   );
+    // }
+
+    // if (showForumModeration) {
+    //   return (
+    //     <ForumModerationPage onBack={() => setShowForumModeration(false)} />
+    //   );
+    // }
+
+    // if (showFullMap || activeTab === "map") {
+    //   return (
+    //     <HuntingMap
+    //       className="h-full w-full"
+    //       onLocationUpdate={(lat, lng) => setUserLocation({ lat, lng })}
+    //     />
+    //   );
+    // }
+
     switch (activeTab) {
       case "hq":
         return (
@@ -188,6 +283,54 @@ export default function Dashboard() {
             onNavigateToLeaseReview={handleNavigateToLeaseReview}
           />
         );
+      case "members":
+        if (membersView === "view_profile" && selectedUserId) {
+          // Track where we came from before viewing profile
+          const previousView =
+            storage.getItem("previousMembersView") || "members";
+          return (
+            <ViewMemberProfilePage
+              userId={selectedUserId}
+              onBack={() => {
+                setMembersView(previousView as unknown as typeof membersView);
+                setSelectedUserId(null);
+              }}
+            />
+          );
+        } else if (membersView === "members") {
+          return (
+            <MemberManagementPage
+              onBack={() => setMembersView("main")}
+              onViewProfile={(userId: Id<"users">) => {
+                storage.setItem("previousMembersView", "members");
+                setSelectedUserId(userId);
+                setMembersView("view_profile");
+              }}
+            />
+          );
+        } else if (membersView === "archived") {
+          return (
+            <ArchivedMembersPage
+              onBack={() => setMembersView("main")}
+              onViewProfile={(userId: Id<"users">) => {
+                storage.setItem("previousMembersView", "archived");
+                setSelectedUserId(userId);
+                setMembersView("view_profile");
+              }}
+            />
+          );
+        } else if (membersView === "bans") {
+          return <BansPage onBack={() => setMembersView("main")} />;
+        } else if (membersView === "subscriptions") {
+          return <SubscriptionsPage onBack={() => setMembersView("main")} />;
+        } else if (membersView === "administrators") {
+          return <AdministratorsPage onBack={() => setMembersView("main")} />;
+        } else if (membersView === "permissions") {
+          return <RolePermissionsPage onBack={() => setMembersView("main")} />;
+        } else if (membersView === "audit") {
+          return <AuditTrailPage onBack={() => setMembersView("main")} />;
+        }
+        return <ManagePage onNavigate={setMembersView} />;
       default:
         return (
           <HQPage
