@@ -1,14 +1,15 @@
-import { ConvexError } from "convex/values";
-import { mutation, query } from "./_generated/server";
 import type { GenericMutationCtx } from "convex/server";
+import { ConvexError } from "convex/values";
 import type { DataModel, Id } from "./_generated/dataModel.d.ts";
+import { mutation, query } from "./_generated/server";
+import { requireOwner } from "./_helpers";
 
 // Super admin email
 const SUPER_ADMIN_EMAIL = "rex@diazcorporations.com";
 
 // Generate unique member number
 async function generateMemberNumber(
-  ctx: GenericMutationCtx<DataModel>,
+  ctx: GenericMutationCtx<DataModel>
 ): Promise<string> {
   // Get the count of all users (including archived)
   const allUsers = await ctx.db.query("users").collect();
@@ -78,7 +79,7 @@ export const updateCurrentUser = mutation({
       // and let the auth callbacks handle user creation, or the component can check
       // if a user exists via getCurrentUser query
       console.log(
-        "[updateCurrentUser] Email not available - auth callbacks will handle user creation",
+        "[updateCurrentUser] Email not available - auth callbacks will handle user creation"
       );
       return null;
     }
@@ -193,7 +194,7 @@ export const getCurrentUser = query({
 
     // Should not reach here. If so, log for diagnostics and return null.
     console.log(
-      "[getCurrentUser] No email or subject in identity, waiting for auth callbacks",
+      "[getCurrentUser] No email or subject in identity, waiting for auth callbacks"
     );
     return null;
   },
@@ -203,27 +204,8 @@ export const getCurrentUser = query({
 export const addMemberNumbersToExistingUsers = mutation({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity || !identity.email) {
-      throw new ConvexError({
-        code: "UNAUTHENTICATED",
-        message: "User not logged in",
-      });
-    }
-
-    // Only allow owners to run this migration
-    // Look up user by email (JWT subject is not a Convex document ID)
-    const currentUser = await ctx.db
-      .query("users")
-      .withIndex("email", (q) => q.eq("email", identity.email!))
-      .unique();
-
-    if (!currentUser || currentUser.role !== "owner") {
-      throw new ConvexError({
-        code: "FORBIDDEN",
-        message: "Only owners can run this migration",
-      });
-    }
+    // Require owner role - this will throw if not authenticated or not owner
+    await requireOwner(ctx);
 
     // Get all users without member numbers
     const allUsers = await ctx.db.query("users").collect();

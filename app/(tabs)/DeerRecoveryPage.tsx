@@ -258,6 +258,8 @@ function RequestHistorySection({
 }) {
   const history = useQuery(api.deerRecovery.getRequestHistory);
   const currentUser = useQuery(api.users.getCurrentUser);
+  console.log(currentUser);
+
   const isAdmin =
     currentUser?.role === "admin" || currentUser?.role === "owner";
 
@@ -350,33 +352,86 @@ function CreateRequestDialog({
 
   // Get user's location
   useEffect(() => {
+    const defaultLocation = { lat: 39.0997, lng: -94.5786 };
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    let hasLoaded = false;
+
+    const loadWithDefaultLocation = () => {
+      if (hasLoaded) return;
+      hasLoaded = true;
+      if (timeoutId) clearTimeout(timeoutId);
+      setLocation(defaultLocation);
+      setMapRegion({
+        latitude: defaultLocation.lat,
+        longitude: defaultLocation.lng,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      });
+    };
+
+    const handleGeolocationSuccess = (position: GeolocationPosition) => {
+      if (hasLoaded) return;
+      hasLoaded = true;
+      if (timeoutId) clearTimeout(timeoutId);
+      const coords = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+      };
+      setLocation(coords);
+      setMapRegion({
+        latitude: coords.lat,
+        longitude: coords.lng,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      });
+    };
+
+    const handleGeolocationError = (error: GeolocationPositionError) => {
+      console.error(
+        "[DeerRecoveryPage] Geolocation error:",
+        error.code,
+        error.message
+      );
+      loadWithDefaultLocation();
+    };
+
+    // Set a timeout to fallback if geolocation takes too long
+    timeoutId = setTimeout(() => {
+      if (!hasLoaded) {
+        loadWithDefaultLocation();
+      }
+    }, 8000);
+
+    // Try web navigator.geolocation first
     if (
+      Platform.OS === "web" &&
       typeof navigator !== "undefined" &&
-      navigator.geolocation &&
-      !location
+      navigator.geolocation
     ) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const pos = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          };
-          setLocation(pos);
-          setMapRegion({
-            latitude: pos.lat,
-            longitude: pos.lng,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
-          });
-        },
-        (error) => {
-          console.error("Error getting location:", error);
-          // Default to Florida center if location unavailable
-          setLocation({ lat: 28.5, lng: -82.5 });
-        }
+        handleGeolocationSuccess,
+        handleGeolocationError,
+        { enableHighAccuracy: true, timeout: 7000, maximumAge: 0 }
       );
     }
-  }, [location]);
+    // Try global navigator for React Native (mobile)
+    else if (global?.navigator?.geolocation) {
+      global.navigator.geolocation.getCurrentPosition(
+        handleGeolocationSuccess,
+        handleGeolocationError,
+        { enableHighAccuracy: true, timeout: 7000, maximumAge: 0 }
+      );
+    }
+    // Fallback if no geolocation available
+    else {
+      loadWithDefaultLocation();
+    }
+
+    // Cleanup
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, []);
 
   const handleMapPress = (e: any) => {
     const { latitude, longitude } = e.nativeEvent.coordinate;
@@ -638,7 +693,6 @@ function CreateRequestDialog({
             {/* Location Picker */}
             <View>
               <Label>Drop a Pin for Location *</Label>
-              <Text>{location ? "true" : "false"}</Text>
               {location ? (
                 <View className="h-48 overflow-hidden rounded-lg border border-gray-700">
                   <MapView

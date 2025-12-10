@@ -7,11 +7,47 @@ import type { Id } from "./_generated/dataModel.d.ts";
  * Returns null if not authenticated
  */
 export async function getCurrentUser(ctx: QueryCtx | MutationCtx) {
-  const userId = await ctx.auth.getUserIdentity();
-  if (!userId) {
+  const identity = await ctx.auth.getUserIdentity();
+  if (!identity) {
     return null;
   }
-  return await ctx.db.get(userId.subject as Id<"users">);
+
+  // Preferred: Look up by email, if available
+  if (identity.email) {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("email", (q) => q.eq("email", identity.email!))
+      .unique();
+    if (user) {
+      return user;
+    }
+  }
+
+  // Fall back to subject-based lookup (if possible)
+  // e.g., subject might be "<userId>|<provider>" or just a Convex ID
+  if (identity.subject) {
+    try {
+      // Try to parse subject - it might contain a Convex ID
+      const parts = identity.subject.split("|");
+      const potentialId = parts[0];
+      
+      // Only try if it looks like a valid Convex ID (32 characters)
+      if (potentialId.length === 32) {
+        const user = await ctx.db.get(potentialId as Id<"users">);
+        if (user) {
+          return user;
+        }
+      }
+    } catch (error) {
+      // Subject is not a valid Convex ID, continue
+      console.log("[getCurrentUser] Subject is not a valid Convex ID", {
+        subject: identity.subject,
+      });
+    }
+  }
+
+  // User not found
+  return null;
 }
 
 /**
@@ -64,9 +100,6 @@ export async function requireOwner(ctx: QueryCtx | MutationCtx) {
  * Returns null if not authenticated
  */
 export async function getCurrentUserId(ctx: QueryCtx | MutationCtx): Promise<Id<"users"> | null> {
-  const userId = await ctx.auth.getUserIdentity();
-  if (!userId) {
-    return null;
-  }
-  return userId.subject as Id<"users">;
+  const user = await getCurrentUser(ctx);
+  return user?._id ?? null;
 }
