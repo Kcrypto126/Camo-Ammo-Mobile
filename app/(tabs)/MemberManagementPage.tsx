@@ -116,7 +116,7 @@ export default function MemberManagementPage({
         {myRole === "owner" && users && users.some((u) => !u.memberNumber) && (
           <Card className="border-[#ff6800]/50 bg-[#ff6800]/5 mb-4">
             <CardContent className="p-4">
-              <View className="flex-row items-center justify-between gap-4">
+              <View className="gap-3">
                 <View className="flex-1">
                   <Text className="text-sm font-medium text-white">
                     Migration Available
@@ -168,7 +168,7 @@ export default function MemberManagementPage({
                   <View className="flex-row items-center gap-4">
                     <UserAvatar user={user} />
                     <View className="flex-1" style={{ minWidth: 0 }}>
-                      <View className="flex-row items-center gap-2 flex-wrap mb-1">
+                      <View className="flex-row items-center gap-2 mb-1 flex-wrap">
                         <Text
                           className="font-semibold text-white"
                           numberOfLines={1}

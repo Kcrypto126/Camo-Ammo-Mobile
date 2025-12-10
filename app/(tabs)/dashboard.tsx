@@ -371,7 +371,7 @@ export default function Dashboard() {
       <View className="flex-1">{renderContent()}</View>
 
       {/* Bottom Navigation */}
-      <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
+      <BottomNav activeTab={activeTab} userRole={userRole} onTabChange={handleTabChange} />
 
       {/* Emergency Dialog */}
       <Dialog

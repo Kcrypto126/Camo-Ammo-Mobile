@@ -1,12 +1,19 @@
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { ShieldIcon } from "lucide-react-native";
 import { Text, TouchableOpacity, View } from "react-native";
 
 interface BottomNavProps {
   activeTab: string;
+  userRole: "admin" | "owner" | "member" | undefined;
   onTabChange: (tab: string) => void;
 }
 
-export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
+export function BottomNav({
+  activeTab,
+  userRole,
+  onTabChange,
+}: BottomNavProps) {
+  const isAdmin = userRole === "admin" || userRole === "owner";
   const tabs = [
     {
       id: "hq",
@@ -63,6 +70,17 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
         />
       ),
     },
+    ...(isAdmin
+      ? [
+          {
+            id: "members",
+            label: "Members",
+            icon: (active: boolean) => (
+              <ShieldIcon size={24} color={active ? "#f97316" : "#9ca3af"} />
+            ),
+          },
+        ]
+      : []),
   ];
 
   return (

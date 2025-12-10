@@ -644,9 +644,9 @@ export default function ViewMemberProfilePage({
               currentTab === tab.id ? "border-orange-500" : "border-transparent"
             }`}
           >
-            <View className="flex-row items-center gap-2">
+            <View className="flex-row items-center gap-1">
               <Text
-                className={`text-sm font-semibold ${
+                className={`text-xs font-semibold ${
                   currentTab === tab.id ? "text-orange-500" : "text-gray-400"
                 }`}
               >
