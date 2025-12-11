@@ -142,12 +142,14 @@ function TicketRepliesSection({
               : "bg-gray-700/50"
           }`}
         >
-          <View className="flex-row items-center gap-2">
+          <View className="flex-row items-center flex-wrap gap-2">
             <Badge
               type={reply.isAdminReply ? "default" : "secondary"}
               className="text-xs"
             >
-              {reply.isAdminReply ? "Support Team" : "Member"}
+              <Text className="text-xs text-white">
+                {reply.isAdminReply ? "Support Team" : "Member"}
+              </Text>
             </Badge>
             <Text className="text-xs font-medium text-white">
               {reply.userName}
@@ -554,9 +556,9 @@ export default function ViewMemberProfilePage({
   };
 
   const getStatusIcon = (status?: string) => {
-    if (status === "banned") return <Ban size={16} color="#ffffff" />;
-    if (status === "hold") return <Pause size={16} color="#ffffff" />;
-    return <AlertCircle size={16} color="#ffffff" />;
+    if (status === "banned") return <Ban size={14} color="#ffffff" />;
+    if (status === "hold") return <Pause size={14} color="#ffffff" />;
+    return <AlertCircle size={14} color="#ffffff" />;
   };
 
   const getTicketStatusBadgeType = (
@@ -644,7 +646,7 @@ export default function ViewMemberProfilePage({
               currentTab === tab.id ? "border-orange-500" : "border-transparent"
             }`}
           >
-            <View className="flex-row items-center gap-1">
+            <View className="flex-row relative items-center gap-1">
               <Text
                 className={`text-xs font-semibold ${
                   currentTab === tab.id ? "text-orange-500" : "text-gray-400"
@@ -653,8 +655,11 @@ export default function ViewMemberProfilePage({
                 {tab.label}
               </Text>
               {tab.badge && tab.badge > 0 && (
-                <Badge type="secondary" className="text-xs">
-                  {tab.badge}
+                <Badge
+                  type="secondary"
+                  className="text-xs !px-0.6 !py-0.5 absolute -right-[25px] top-[-10px]"
+                >
+                  <Text className="text-xs text-amber-300">{tab.badge}</Text>
                 </Badge>
               )}
             </View>
@@ -697,7 +702,9 @@ export default function ViewMemberProfilePage({
                       </Text>
                       {user.memberNumber && (
                         <Badge type="secondary" className="text-xs">
-                          {user.memberNumber}
+                          <Text className="text-xs text-amber-300">
+                            {user.memberNumber}
+                          </Text>
                         </Badge>
                       )}
                     </View>
@@ -717,7 +724,7 @@ export default function ViewMemberProfilePage({
                       <Badge type={getRoleBadgeType(user.role || "member")}>
                         <View className="flex-row items-center gap-1">
                           {getRoleIcon(user.role || "member")}
-                          <Text className="text-white">
+                          <Text className="text-white text-xs">
                             {(user.role || "member").toUpperCase()}
                           </Text>
                         </View>
@@ -747,7 +754,7 @@ export default function ViewMemberProfilePage({
                     >
                       <View className="flex-row items-center gap-1">
                         {getStatusIcon(user.accountStatus || "active")}
-                        <Text className="text-white">
+                        <Text className="text-white text-xs">
                           {(user.accountStatus || "active").toUpperCase()}
                         </Text>
                       </View>
@@ -788,7 +795,11 @@ export default function ViewMemberProfilePage({
                         user.accountAccessRestricted ? "destructive" : "default"
                       }
                     >
-                      {user.accountAccessRestricted ? "RESTRICTED" : "ALLOWED"}
+                      <Text className="text-xs text-white">
+                        {user.accountAccessRestricted
+                          ? "RESTRICTED"
+                          : "ALLOWED"}
+                      </Text>
                     </Badge>
                   </View>
                 </View>
@@ -897,8 +908,8 @@ export default function ViewMemberProfilePage({
                 <CardTitle className="text-base">Call Logs</CardTitle>
                 <Button onPress={() => setShowCallDialog(true)}>
                   <View className="flex-row items-center">
-                    <Phone size={16} color="#000" style={{ marginRight: 8 }} />
-                    <Text className="text-[#000]">Log Call</Text>
+                    <Phone size={16} color="#fff" style={{ marginRight: 8 }} />
+                    <Text className="text-[#fff]">Log Call</Text>
                   </View>
                 </Button>
               </CardHeader>
@@ -920,9 +931,9 @@ export default function ViewMemberProfilePage({
                           ) : (
                             <PhoneOutgoing size={16} color="#3b82f6" />
                           )}
-                          <Badge type="secondary" className="text-xs">
+                          <Text className="text-xs text-white">
                             {log.callType.toUpperCase()}
-                          </Badge>
+                          </Text>
                           {log.duration && (
                             <Text className="text-xs text-gray-400">
                               {log.duration} min
@@ -1018,7 +1029,7 @@ export default function ViewMemberProfilePage({
                   {user.forumBanExpiresAt &&
                     user.forumBanExpiresAt > Date.now() && (
                       <Badge type="destructive" className="text-xs">
-                        Banned
+                        <Text className="text-xs text-red-300">Banned</Text>
                       </Badge>
                     )}
                 </View>
@@ -1093,7 +1104,9 @@ export default function ViewMemberProfilePage({
                       Total Warnings:{" "}
                     </Text>
                     <Badge type="secondary" className="ml-1 text-xs">
-                      {user.forumWarningCount}
+                      <Text className="text-xs text-amber-300">
+                        {user.forumWarningCount}
+                      </Text>
                     </Badge>
                   </View>
                 )}
@@ -1134,11 +1147,15 @@ export default function ViewMemberProfilePage({
                                   }
                                   className="text-xs"
                                 >
-                                  {post.status || "approved"}
+                                  <Text className="text-xs text-white">
+                                    {post.status || "approved"}
+                                  </Text>
                                 </Badge>
                                 {post.hasWarning && (
                                   <Badge type="destructive" className="text-xs">
-                                    ⚠️ Warning
+                                    <Text className="text-xs text-red-300">
+                                      ⚠️ Warning
+                                    </Text>
                                   </Badge>
                                 )}
                               </View>
@@ -1200,7 +1217,9 @@ export default function ViewMemberProfilePage({
                                   type="destructive"
                                   className="text-xs mt-1"
                                 >
-                                  ⚠️ Warning
+                                  <Text className="text-xs text-red-300">
+                                    ⚠️ Warning
+                                  </Text>
                                 </Badge>
                               )}
                               <Text className="text-xs text-gray-400 mt-1">
@@ -1270,7 +1289,19 @@ export default function ViewMemberProfilePage({
                                   >
                                     <View className="flex-row items-center gap-1">
                                       {getTicketStatusIcon(ticket.status)}
-                                      <Text className="text-white">
+                                      <Text
+                                        className={`text-xs ${
+                                          getTicketStatusBadgeType(
+                                            ticket.status
+                                          ) === "secondary"
+                                            ? "text-gray-400"
+                                            : getTicketStatusBadgeType(
+                                                  ticket.status
+                                                ) === "destructive"
+                                              ? "text-red-300"
+                                              : "text-white"
+                                        }`}
+                                      >
                                         {ticket.status
                                           .replace("_", " ")
                                           .toUpperCase()}
@@ -1308,7 +1339,9 @@ export default function ViewMemberProfilePage({
                                 </Text>
                               </View>
                               <Badge type="secondary" className="text-xs">
-                                {ticket.category}
+                                <Text className="text-xs text-amber-300">
+                                  {ticket.category}
+                                </Text>
                               </Badge>
                             </View>
 
@@ -1369,7 +1402,7 @@ export default function ViewMemberProfilePage({
                                 </View>
 
                                 {/* Reply Form */}
-                                <View className="border-t border-gray-700 pt-3 gap-3">
+                                <View className="border-t border-gray-700 py-3 gap-3">
                                   <Text className="text-xs font-semibold text-white">
                                     Add Reply
                                   </Text>
@@ -1446,6 +1479,7 @@ export default function ViewMemberProfilePage({
                                     </Button>
 
                                     <Button
+                                      type="primary"
                                       className="flex-1"
                                       onPress={() =>
                                         handleSendReply(ticket._id)
@@ -1511,8 +1545,8 @@ export default function ViewMemberProfilePage({
                   }}
                 >
                   <View className="flex-row items-center">
-                    <Upload size={16} color="#000" style={{ marginRight: 8 }} />
-                    <Text className="text-[#000]">Upload File</Text>
+                    <Upload size={16} color="#fff" style={{ marginRight: 8 }} />
+                    <Text className="text-[#fff]">Upload File</Text>
                   </View>
                 </Button>
               </CardHeader>
@@ -1597,7 +1631,7 @@ export default function ViewMemberProfilePage({
             <Button type="outline" onPress={() => setShowStatusDialog(false)}>
               <Text className="text-white">Cancel</Text>
             </Button>
-            <Button onPress={handleStatusChange}>
+            <Button type="primary" onPress={handleStatusChange}>
               <Text className="text-white">Confirm</Text>
             </Button>
           </View>
@@ -1733,7 +1767,7 @@ export default function ViewMemberProfilePage({
               className="min-h-20"
             />
           </View>
-          <View className="flex-row gap-2 justify-end">
+          <View className="flex-row gap-2 justify-between">
             <Button
               type="outline"
               onPress={() => {
@@ -1745,6 +1779,7 @@ export default function ViewMemberProfilePage({
               <Text className="text-white">Cancel</Text>
             </Button>
             <Button
+              type="primary"
               onPress={handleFileUpload}
               disabled={isUploading || !selectedFile}
             >

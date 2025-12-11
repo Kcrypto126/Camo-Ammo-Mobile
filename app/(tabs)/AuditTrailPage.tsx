@@ -1,14 +1,13 @@
-import { useState } from "react";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api.js";
-import { Card, CardContent } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { Skeleton } from "@/components/ui/Skeleton";
-import { Select } from "@/components/ui/Select";
-import { ArrowLeft, Search, FileText, Filter } from "lucide-react-native";
-import { format } from "date-fns";
 import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { Card, CardContent } from "@/components/ui/Card";
+import { Select } from "@/components/ui/Select";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { api } from "@/convex/_generated/api.js";
+import { useQuery } from "convex/react";
+import { format } from "date-fns";
+import { ArrowLeft, FileText, Filter, Search } from "lucide-react-native";
+import { useState } from "react";
 import { ScrollView, Text, TextInput, View } from "react-native";
 
 interface AuditTrailPageProps {
@@ -77,7 +76,10 @@ export default function AuditTrailPage({ onBack }: AuditTrailPageProps) {
       <View className="border-b border-gray-700 bg-gray-800 p-4 gap-3">
         <View className="flex-row gap-2">
           <View className="flex-1 relative">
-            <View className="absolute left-3 top-1/2" style={{ transform: [{ translateY: -8 }] }}>
+            <View
+              className="absolute left-3 top-1/2"
+              style={{ transform: [{ translateY: -8 }] }}
+            >
               <Search size={16} color="#9ca3af" />
             </View>
             <TextInput
@@ -112,8 +114,9 @@ export default function AuditTrailPage({ onBack }: AuditTrailPageProps) {
             onChange={(value) => {
               const selectedValue = entityTypeOptions.find(
                 (opt) =>
-                  (opt === "all" ? "All Types" : opt.charAt(0).toUpperCase() + opt.slice(1)) ===
-                  value
+                  (opt === "all"
+                    ? "All Types"
+                    : opt.charAt(0).toUpperCase() + opt.slice(1)) === value
               );
               setEntityTypeFilter(selectedValue || "all");
             }}
@@ -178,7 +181,13 @@ export default function AuditTrailPage({ onBack }: AuditTrailPageProps) {
                         </Text>
                       </View>
                       <Badge
-                        type={getEntityTypeBadgeVariant(log.entityType)}
+                        type={
+                          getEntityTypeBadgeVariant(log.entityType) as
+                            | "success"
+                            | "default"
+                            | "secondary"
+                            | "destructive"
+                        }
                       >
                         <Text className="text-xs">{log.entityType}</Text>
                       </Badge>
@@ -216,8 +225,7 @@ export default function AuditTrailPage({ onBack }: AuditTrailPageProps) {
         {logs && logs.length > 0 && (
           <View className="pt-4">
             <Text className="text-center text-sm text-gray-400">
-              Showing {logs.length}{" "}
-              {logs.length === 1 ? "result" : "results"}
+              Showing {logs.length} {logs.length === 1 ? "result" : "results"}
             </Text>
           </View>
         )}

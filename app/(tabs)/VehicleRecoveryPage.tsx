@@ -79,7 +79,11 @@ export default function VehicleRecoveryPage({
     };
 
     const handleGeolocationError = (error: GeolocationPositionError) => {
-      console.error("[VehicleRecoveryPage] Geolocation error:", error.code, error.message);
+      console.error(
+        "[VehicleRecoveryPage] Geolocation error:",
+        error.code,
+        error.message
+      );
       loadWithDefaultLocation();
     };
 
@@ -243,11 +247,6 @@ export default function VehicleRecoveryPage({
                         </View>
                       </View>
                     </View>
-                    {request.distance !== undefined && (
-                      <Badge type="secondary" className="text-xs">
-                        <Text>{request.distance.toFixed(1)} mi</Text>
-                      </Badge>
-                    )}
                   </View>
                 </CardHeader>
                 <CardContent className="pt-0">
@@ -503,22 +502,23 @@ function RequestDetailView({
                 <Badge
                   type={request.status === "active" ? "default" : "secondary"}
                 >
-                  <Text>
-                    {isClosed ? (
-                      <Text>Closed</Text>
-                    ) : (
-                      <Text>{request.status}</Text>
-                    )}
+                  <Text
+                    style={{
+                      color:
+                        request.status === "active"
+                          ? "#f97316" // default badge border color
+                          : "#9ca3af", // secondary badge border color
+                    }}
+                  >
+                    {isClosed ? "Closed" : request.status}
                   </Text>
                 </Badge>
                 {request.requestStatus && !isClosed && (
                   <Badge type="default">
-                    <Text>
-                      {request.requestStatus === "still_waiting" ? (
-                        <Text>Still Waiting</Text>
-                      ) : (
-                        <Text>In Progress</Text>
-                      )}
+                    <Text style={{ color: "#f97316" }}>
+                      {request.requestStatus === "still_waiting"
+                        ? "Still Waiting"
+                        : "In Progress"}
                     </Text>
                   </Badge>
                 )}

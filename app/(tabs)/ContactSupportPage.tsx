@@ -197,7 +197,17 @@ export default function ContactSupportPage({
                             >
                               <View className="flex-row items-center gap-1">
                                 {getStatusIcon(ticket.status)}
-                                <Text className="text-xs">
+                                <Text
+                                  className="text-xs"
+                                  style={{
+                                    color:
+                                      ticket.status === "resolved" || ticket.status === "closed"
+                                        ? "#9ca3af"
+                                        : ticket.status === "in_progress"
+                                        ? "#9ca3af"
+                                        : "#ef4444",
+                                  }}
+                                >
                                   {ticket.status
                                     .replace("_", " ")
                                     .toUpperCase()}

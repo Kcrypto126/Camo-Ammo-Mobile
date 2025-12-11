@@ -76,9 +76,9 @@ export default function MemberManagementPage({
   };
 
   const getRoleIcon = (role: string) => {
-    if (role === "owner") return <Shield size={16} color="currentColor" />;
-    if (role === "admin") return <UserCog size={16} color="currentColor" />;
-    return <User size={16} color="currentColor" />;
+    if (role === "owner") return <Shield size={14} color="#fff" />;
+    if (role === "admin") return <UserCog size={14} color="#fff" />;
+    return <User size={14} color="#fff" />;
   };
 
   const getRoleBadgeVariant = (role: string): "default" | "secondary" => {
@@ -175,19 +175,19 @@ export default function MemberManagementPage({
                         >
                           {user.name || "Unknown"}
                         </Text>
-                        {user.memberNumber && (
+                        {/* {user.memberNumber && (
                           <Badge type="default" className="text-xs">
                             <Text className="text-yellow-500">
                               {user.memberNumber}
                             </Text>
                           </Badge>
-                        )}
+                        )} */}
                         <Badge
                           type={getRoleBadgeVariant(user.role || "member")}
                         >
                           <View className="flex-row items-center gap-1">
                             {getRoleIcon(user.role || "member")}
-                            <Text className="text-xs">
+                            <Text className="text-xs text-white">
                               {(user.role || "member").toUpperCase()}
                             </Text>
                           </View>
@@ -219,6 +219,7 @@ export default function MemberManagementPage({
                     <Button
                       type="ghost"
                       onPress={() => onViewProfile(user._id)}
+                      className="!px-0 !py-0"
                     >
                       <View className="flex-row items-center gap-1">
                         <Eye size={16} color="#ffffff" />
