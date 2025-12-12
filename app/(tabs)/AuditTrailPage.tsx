@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { api } from "@/convex/_generated/api.js";
 import { useQuery } from "convex/react";
 import { format } from "date-fns";
-import { ArrowLeft, FileText, Filter, Search } from "lucide-react-native";
+import { ArrowLeft, FileText, Filter } from "lucide-react-native";
 import { useState } from "react";
 import { ScrollView, Text, TextInput, View } from "react-native";
 
@@ -74,21 +74,15 @@ export default function AuditTrailPage({ onBack }: AuditTrailPageProps) {
 
       {/* Search and Filters */}
       <View className="border-b border-gray-700 bg-gray-800 p-4 gap-3">
-        <View className="flex-row gap-2">
-          <View className="flex-1 relative">
-            <View
-              className="absolute left-3 top-1/2"
-              style={{ transform: [{ translateY: -8 }] }}
-            >
-              <Search size={16} color="#9ca3af" />
-            </View>
+x        <View className="flex-row gap-2">
+          <View className="flex-1">
             <TextInput
               placeholder="Search by name, email, phone, or member number..."
               placeholderTextColor="#9ca3af"
               value={searchTerm}
               onChangeText={setSearchTerm}
               onSubmitEditing={handleSearch}
-              className="bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 pl-10 text-white"
+              className="bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white"
               style={{ color: "#ffffff" }}
             />
           </View>

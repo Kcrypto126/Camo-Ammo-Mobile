@@ -616,8 +616,8 @@ export default function ViewMemberProfilePage({
   const tabs = [
     { id: "profile", label: "Profile" },
     { id: "communication", label: "Communication" },
-    { id: "inquiries", label: "Inquiries", badge: tickets.length },
-    { id: "files", label: "Files", badge: files.length },
+    { id: "inquiries", label: "Inquiries", badge: tickets?.length ?? 0 },
+    { id: "files", label: "Files", badge: files?.length ?? 0 },
   ];
 
   return (
@@ -652,15 +652,14 @@ export default function ViewMemberProfilePage({
                   currentTab === tab.id ? "text-orange-500" : "text-gray-400"
                 }`}
               >
-                {tab.label}
+                {tab.label || ""}
               </Text>
-              {tab.badge && tab.badge > 0 && (
-                <Badge
-                  type="secondary"
-                  className="text-xs !px-0.6 !py-0.5 absolute -right-[25px] top-[-10px]"
-                >
-                  <Text className="text-xs text-amber-300">{tab.badge}</Text>
-                </Badge>
+              {typeof tab.badge === "number" && tab.badge > 0 && (
+                <View className="absolute -right-[25px] top-[-10px] rounded-full bg-amber-500/30 border border-amber-500/50 px-1.5 py-0.5">
+                  <Text className="text-xs text-amber-300 font-semibold">
+                    {tab.badge}
+                  </Text>
+                </View>
               )}
             </View>
           </TouchableOpacity>
@@ -1723,7 +1722,7 @@ export default function ViewMemberProfilePage({
               <Button type="outline" onPress={() => setShowCallDialog(false)}>
                 <Text className="text-white">Cancel</Text>
               </Button>
-              <Button onPress={handleAddCall}>
+              <Button type="primary" onPress={handleAddCall}>
                 <Text className="text-white">Log Call</Text>
               </Button>
             </View>

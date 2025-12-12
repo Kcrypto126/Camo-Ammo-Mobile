@@ -22,11 +22,14 @@ import AdministratorsPage from "./AdministratorsPage";
 import ArchivedMembersPage from "./ArchivedMembersPage";
 import AuditTrailPage from "./AuditTrailPage";
 import BansPage from "./BansPage";
+import ForumModerationPage from "./ForumModerationPage";
 import ManagePage from "./ManagePage";
 import MemberManagementPage from "./MemberManagementPage";
 import OpenTicketsListPage from "./OpenTicketsListPage";
+import PendingPostsListPage from "./PendingPostsListPage";
 import ProfileSetupPage from "./ProfileSetupPage";
 import PublicProfilePage from "./PublicProfilePage";
+import ReportedPostsListPage from "./ReportedPostsListPage";
 import RolePermissionsPage from "./RolePermissionsPage";
 import SubscriptionsPage from "./SubscriptionsPage";
 import ViewMemberProfilePage from "./ViewMemberProfilePage";
@@ -216,32 +219,31 @@ export default function Dashboard() {
       );
     }
 
-    // if (showPendingPostsList) {
-    //   return (
-    //     <PendingPostsListPage onBack={() => setShowPendingPostsList(false)} />
-    //   );
-    // }
+    if (showPendingPostsList) {
+      return (
+        <PendingPostsListPage onBack={() => setShowPendingPostsList(false)} />
+      );
+    }
 
-    // if (showReportedPostsList) {
-    //   return (
-    //     <ReportedPostsListPage onBack={() => setShowReportedPostsList(false)} />
-    //   );
-    // }
+    if (showReportedPostsList) {
+      return (
+        <ReportedPostsListPage onBack={() => setShowReportedPostsList(false)} />
+      );
+    }
 
-    // if (showForumModeration) {
-    //   return (
-    //     <ForumModerationPage onBack={() => setShowForumModeration(false)} />
-    //   );
-    // }
+    if (showForumModeration) {
+      return (
+        <ForumModerationPage onBack={() => setShowForumModeration(false)} />
+      );
+    }
 
-    // if (showFullMap || activeTab === "map") {
-    //   return (
-    //     <HuntingMap
-    //       className="h-full w-full"
-    //       onLocationUpdate={(lat, lng) => setUserLocation({ lat, lng })}
-    //     />
-    //   );
-    // }
+    if (showFullMap || activeTab === "map") {
+      return (
+        <HuntingMap
+          onLocationUpdate={(lat, lng) => setUserLocation({ lat, lng })}
+        />
+      );
+    }
 
     switch (activeTab) {
       case "hq":
@@ -371,7 +373,11 @@ export default function Dashboard() {
       <View className="flex-1">{renderContent()}</View>
 
       {/* Bottom Navigation */}
-      <BottomNav activeTab={activeTab} userRole={userRole} onTabChange={handleTabChange} />
+      <BottomNav
+        activeTab={activeTab}
+        userRole={userRole}
+        onTabChange={handleTabChange}
+      />
 
       {/* Emergency Dialog */}
       <Dialog
