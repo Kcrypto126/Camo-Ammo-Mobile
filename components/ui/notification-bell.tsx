@@ -134,7 +134,7 @@ export function NotificationBell() {
         onRequestClose={() => setOpen(false)}
       >
         <Pressable
-          style={tw`flex-1 top-10`} // Make overlay a touch darker for emphasis
+          style={[tw`flex-1 top-10 bg-black`, { opacity: 0.5 }]} // Make overlay a touch darker for emphasis
           onPress={() => setOpen(false)}
         />
         <View
