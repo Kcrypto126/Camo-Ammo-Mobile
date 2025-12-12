@@ -207,6 +207,7 @@ export default function Dashboard() {
     await storage.setItem("expandedTicketId", ticketId);
     setSelectedUserId(userId);
     setMembersView("view_profile");
+    setActiveTab("members");
   };
 
   const renderContent = () => {

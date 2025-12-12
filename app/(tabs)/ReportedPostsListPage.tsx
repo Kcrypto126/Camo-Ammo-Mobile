@@ -411,7 +411,6 @@ export default function ReportedPostsListPage({
               value={rejectionReason}
               onChangeText={setRejectionReason}
               placeholder="Explain why this post is being removed..."
-              className="min-h-24"
             />
           </View>
           <View className="flex-row gap-2 justify-end">

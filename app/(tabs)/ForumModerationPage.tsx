@@ -416,13 +416,12 @@ export default function ForumModerationPage({
               be notified.
             </Text>
           </View>
-          <View className="gap-2">
+          <View className="gap-2 mb-4">
             <Label>Rejection Reason *</Label>
             <Textarea
               placeholder="Explain why this post was rejected..."
               value={rejectionReason}
               onChangeText={setRejectionReason}
-              className="min-h-24"
             />
           </View>
           <View className="flex-row gap-2 justify-end">

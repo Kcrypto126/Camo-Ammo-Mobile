@@ -1311,7 +1311,7 @@ export default function ViewMemberProfilePage({
                                     ticket.status !== "resolved" && (
                                       <Button
                                         type="outline"
-                                        className="h-6"
+                                        className="h-8"
                                         onPress={async () => {
                                           try {
                                             await updateTicketStatus({

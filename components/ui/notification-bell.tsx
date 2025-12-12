@@ -134,11 +134,11 @@ export function NotificationBell() {
         onRequestClose={() => setOpen(false)}
       >
         <Pressable
-          style={tw`flex-1 bg-black bg-opacity-50 top-10`} // Make overlay a touch darker for emphasis
+          style={tw`flex-1 top-10`} // Make overlay a touch darker for emphasis
           onPress={() => setOpen(false)}
         />
         <View
-          style={tw`absolute self-center top-16 w-80 rounded-xl shadow-xl overflow-hidden bg-[#181818] border border-[#272727]`}
+          style={tw`absolute self-center top-22 w-80 h-100 rounded-xl shadow-xl overflow-hidden bg-[#181818] border border-[#272727]`}
         >
           <View
             style={tw`flex-row items-center justify-between border-b border-[#232323] px-4 py-3 bg-[#1e1e1e]`}
@@ -154,7 +154,7 @@ export function NotificationBell() {
               </View>
             )}
           </View>
-          <View style={tw`h-100 bg-transparent`}>
+          <View style={tw`h-70 bg-transparent`}>
             <ScrollView contentContainerStyle={tw`flex-grow`}>
               {notifications === undefined ? (
                 <View style={tw`space-y-2 p-4`}>

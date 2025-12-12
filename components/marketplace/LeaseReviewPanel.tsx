@@ -266,7 +266,6 @@ export default function LeaseReviewPanel({
                 placeholder="Enter the reason for rejection..."
                 value={rejectionReason}
                 onChangeText={setRejectionReason}
-                className="min-h-32"
               />
             </View>
           )}
