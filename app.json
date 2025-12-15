@@ -3,6 +3,9 @@
     "name": "camo-mobile",
     "slug": "camo-mobile",
     "version": "1.0.0",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "camo-mobile",
@@ -10,8 +13,14 @@
     "newArchEnabled": false,
     "ios": {
       "supportsTablet": true,
+      "bundleIdentifier": "com.don.camomobile",
+      "buildNumber": "1",
       "config": {
-        "googleMapsApiKey": "YOUR_GOOGLE_MAPS_API_KEY_HERE"
+        "googleMapsApiKey": "AIzaSyBZlVpjKJDAe-EvJB_BIzqujzrow2ONHPk"
+      },
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "This app uses your location to show maps and track your hunting activities.",
+        "NSLocationAlwaysUsageDescription": "This app uses your location to show maps and track your hunting activities."
       }
     },
     "android": {
@@ -24,6 +33,12 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.don.camomobile",
+      "versionCode": 1,
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION"
+      ],
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyBZlVpjKJDAe-EvJB_BIzqujzrow2ONHPk"
@@ -35,7 +50,7 @@
       "favicon": "./assets/favicon.png",
       "config": {
         "googleMaps": {
-          "apiKey": "YOUR_WEB_API_KEY"
+          "apiKey": "AIzaSyBZlVpjKJDAe-EvJB_BIzqujzrow2ONHPk"
         }
       }
     },
@@ -64,6 +79,10 @@
         "projectId": "624acbd7-327c-4d1b-a258-9c8a749a3972"
       }
     },
-    "owner": "superdev19782"
+    "owner": "superdev19782",
+    "updates": {
+      "url": "https://u.expo.dev/624acbd7-327c-4d1b-a258-9c8a749a3972",
+      "fallbackToCacheTimeout": 0
+    }
   }
 }
