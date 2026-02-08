@@ -1,169 +1,123 @@
-# Camo & Ammo Mobile App 👋
-Expo + React Native mobile app and Convex Backend
+# 🧭 Camo Mobile (P-494)
 
-This is an [Expo](https://expo.dev) project with [Convex](https://convex.dev) backend, created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A React Native mobile app for a hunting/outdoor community platform, with member management, forums, support tickets, deer/vehicle recovery, maps, scouting, and admin tools—powered by Expo and Convex.
 
-## Tech Stack
+## 📚 Table of Contents
 
-- **Frontend**: Expo Router, React Native, NativeWind (Tailwind CSS)
-- **Backend**: Convex (real-time database and serverless functions)
-- **Authentication**: Convex Auth with Google OAuth and Email/Password with OTP verification
-- **Styling**: NativeWind v4 (Tailwind CSS for React Native)
+- [About](#about)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Configuration](#configuration)
+- [Screenshots](#screenshots)
+- [API Documentation](#api-documentation)
+- [Contact](#contact)
+- [Acknowledgements](#acknowledgements)
 
-## Screenshots
+## 🧩 About
 
-### Dashboard
+Camo Mobile is a mobile app for a hunting/outdoor membership platform. It provides dashboard, member profiles, forums, support tickets, deer and vehicle recovery workflows, maps (hunting units, land leases, tracking), scouting trips, friends/location sharing, and admin tools (member management, audit trail, bans, role permissions, forum moderation). The app uses Expo (React Native), Convex for backend and auth, and NativeWind (Tailwind) for styling.
 
-![Dashboard](./assets/images/dashboard.png)
+## ✨ Features
 
-## Get started
+- **Auth & profile** – Sign-in (email/password, optional biometrics), profile setup, public profile, member numbers
+- **Dashboard** – Main hub and navigation into core features
+- **Member management** – List members, view/edit profiles, roles (owner/admin/member), account status, call logs, admin notes; migration for member numbers
+- **Forums** – Forum list, posts, moderation, pending/reported posts, warnings/bans
+- **Support** – Contact support, open tickets list, ticket replies and status
+- **Deer recovery** – Deer recovery requests and workflows
+- **Vehicle recovery** – Vehicle recovery requests and workflows
+- **Maps** – Map view with hunting units, land leases, property layers, tracking/waypoints, friend locations
+- **Scouting** – Scouting trips and related dialogs
+- **Friends** – Add friends, friend list, location sharing
+- **HQ / Manage** – Admin entry: member management, audit trail, bans, role permissions, forum moderation, subscriptions
+- **Other** – Solunar, weather, hunts, tracks, waypoints; responsive UI with bottom nav and toasts
 
-### 1. Install dependencies
+## 🧠 Tech Stack
+
+| Category      | Technologies                                                         |
+| ------------- | -------------------------------------------------------------------- |
+| **Framework** | Expo ~54 (Expo Router 6)                                             |
+| **Language**  | TypeScript (React 19)                                                |
+| **Backend**   | Convex (realtime DB, auth, server functions)                         |
+| **Auth**      | @convex-dev/auth, optional biometrics (expo-secure-store)            |
+| **Styling**   | NativeWind 4 (Tailwind), Lucide React Native                         |
+| **UI**        | React Native core, react-native-maps, Bottom Tabs, Stack             |
+| **Forms**     | react-hook-form, @hookform/resolvers                                 |
+| **Other**     | date-fns, suncalc (solunar), Resend (email), react-native-reanimated |
+| **Tools**     | ESLint (expo), TypeScript, EAS (app.json)                            |
+
+## ⚙️ Installation
 
 ```bash
+# Clone the repository
+git clone https://github.com/Kcrypto126/Camo-Ammo-Mobile
+cd Camo-Ammo-Mobile
+
+# Install dependencies
 npm install
 ```
 
-### 2. Set up Convex Backend
-
-#### Install Convex CLI (if not already installed)
+## 🚀 Usage
 
 ```bash
-npm install -g convex
+# Start the Expo dev server
+npm start
+# or with dev client
+npm run dev
+
+# Run Convex backend (separate terminal)
+npm run backend
 ```
 
-#### Login to Convex
+Then open the app in a simulator/device via Expo Go or a development build.
 
-```bash
-npx convex login
-```
+**Other scripts:**
 
-#### Initialize/Deploy Convex
+- `npm run android` – Run on Android
+- `npm run ios` – Run on iOS
+- `npm run web` – Run in web browser
+- `npm run lint` – Run ESLint
 
-```bash
-npx convex dev
-```
+## 🧾 Configuration
 
-This will:
-
-- Create a new Convex project (if first time)
-- Deploy your backend functions
-- Start the Convex dev server
-- Generate environment variables
-
-### 3. Configure Environment Variables
-
-Create a `.env` file in the root directory with the following variables:
+Create a `.env` (or use `.env.example` as reference) in the project root:
 
 ```env
-# Convex
-EXPO_PUBLIC_CONVEX_URL=your_convex_url_here
-
-# Convex Backend Environment Variables (set in Convex dashboard)
-# These are set in your Convex project settings, not in .env:
-# - GOOGLE_CLIENT_ID
-# - GOOGLE_CLIENT_SECRET
-# - AUTH_EMAIL
-# - AUTH_RESEND_KEY
-# - CONVEX_SITE_URL
+CONVEX_DEPLOYMENT=dev:your-deployment
+EXPO_PUBLIC_CONVEX_URL=https://your-deployment.convex.cloud
+EXPO_PUBLIC_CONVEX_SITE_URL=https://your-deployment.convex.site
+EXPO_PUBLIC_GOOGLE_MAPS_API_KEY=your-google-maps-api-key
 ```
 
-**Note**: Backend environment variables (like `GOOGLE_CLIENT_ID`, `AUTH_RESEND_KEY`, etc.) should be configured in your Convex dashboard under Project Settings → Environment Variables.
+- Convex: Create a project at [convex.dev](https://convex.dev), then run `npx convex dev` and follow prompts to link the deployment.
+- Maps: Set `EXPO_PUBLIC_GOOGLE_MAPS_API_KEY` (and optionally in `app.json` for native builds) for map features.
 
-### 4. Start the app
+## 🖼 Screenshots
 
-```bash
-npx expo start
-```
+![home page screenshot](https://github.com/Kcrypto126/Camo-Ammo-Mobile/blob/main/assets/images/dashboard.png?raw=true)
 
-In the output, you'll find options to open the app in a
+## 📜 API Documentation
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+The app does not expose REST API routes. All data and actions go through **Convex**:
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- **Queries** – e.g. `api.users.getCurrentUser`, `api.roles.listUsers`, `api.forums.getForums`, `api.support.getTickets`
+- **Mutations** – e.g. `api.users.updateCurrentUser`, `api.support.createTicket`, `api.deerRecovery.createRequest`
+- **Auth** – Handled by `@convex-dev/auth` (sign-in, sign-out, session) and Convex HTTP routes if configured in `convex/http.ts`
 
-## Get a fresh project
+Convex function names and arguments are defined in the `convex/` folder (e.g. `convex/users.ts`, `convex/support.ts`). Use the Convex dashboard and generated `api` object from `convex/react` for the full list of available functions.
 
-When you're ready, run:
+## 📬 Contact
 
-```bash
-npm run reset-project
-```
+- **Author:** Kaori Fujio
+- **Email:** superdev19782@gmail.com
+- **GitHub:** @kcrypto126
+- **Website/Portfolio:** https://kaorifujio19782.vercel.app/
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## 🌟 Acknowledgements
 
-## Convex Backend
-
-This project uses [Convex](https://convex.dev) as the backend, providing:
-
-- **Real-time database**: Automatic reactivity and real-time updates
-- **Serverless functions**: Backend logic in TypeScript
-- **Authentication**: Built-in auth with Convex Auth
-- **File storage**: Built-in file uploads and storage
-
-### Backend Structure
-
-The `convex/` directory contains:
-
-- **`auth.ts`**: Authentication configuration with Google OAuth and Email/Password providers
-- **`schema.ts`**: Database schema definitions
-- **`users.ts`**: User management functions
-- **`profile.ts`**: User profile operations
-- **Other modules**: Various domain-specific functions (hunts, tracks, forums, etc.)
-
-### Authentication Features
-
-- **Google OAuth**: Sign in with Google account
-- **Email/Password**: Traditional email and password authentication
-- **OTP Verification**: 4-digit code sent via email for account verification
-- **Password Reset**: Email-based password reset functionality
-
-### Running Convex Development Server
-
-To run the Convex backend in development mode:
-
-```bash
-npx convex dev
-```
-
-This will:
-
-- Watch for changes in `convex/` directory
-- Automatically deploy changes
-- Show logs and errors in real-time
-- Sync your local schema with the database
-
-### Convex Dashboard
-
-Access your Convex dashboard at: https://dashboard.convex.dev
-
-From the dashboard you can:
-
-- View and query your database
-- Monitor function logs
-- Configure environment variables
-- Manage deployments
-
-## Learn more
-
-### Expo Resources
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-### Convex Resources
-
-- [Convex documentation](https://docs.convex.dev/): Learn about Convex backend development
-- [Convex Auth guide](https://docs.convex.dev/auth): Authentication with Convex Auth
-- [Convex React guide](https://docs.convex.dev/client/react): Using Convex with React/React Native
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Expo Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
-- [Convex Discord](https://convex.dev/community): Join the Convex community for backend discussions.
+- Inspiration or resources used
+- Libraries, icons, or tutorials referenced
+- Collaborators or contributors
